@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, TextInput,StyleSheet,Image} from 'react-native'
-import FlagSelect from "../SelectBox/Select";
+import FlagSelect from "./SubComponent/SelectBox/Select";
 
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
@@ -139,14 +139,8 @@ export class CustomInput extends React.Component {
                             <FlagSelect
                                 handleCode={this.setDialCode}
                             />}
-                        {/*{
-                        this.state.isEmail?null:
-                    <View style={{}}>
-                        <Text style={{fontSize: 18, fontFamily: 'light', paddingTop: 4}}> +{this.state.dialCode}</Text>
                     </View>
-                    }*/}
-                    </View>
-                    <View>
+                    <View style={{zIndex:-999}}>
                         <TextInput
                             type={this.state.isEmail ? 'text' : 'number'}
                             autoCorrect={false}
