@@ -60,8 +60,8 @@ export class FlagSelect extends React.Component {
                         borderWidth: 1,
                         borderRadius: 7,
                         width: 220,
-                        top:50,
-                        left:5,
+                        top:29,
+                        left:0,
                         // marginTop: 24,//for chrome
                         // marginTop: 5,//for IE
                         marginBottom: 5,
@@ -77,6 +77,7 @@ export class FlagSelect extends React.Component {
                             style={{
                                 borderWidth: 0.5,
                                 padding: 5,
+                                outline:'none',
                                 marginHorizontal: 5,
                                 borderColor: '#ccc',
                                 borderRadius: 6,
@@ -84,7 +85,7 @@ export class FlagSelect extends React.Component {
                                 marginTop: 3
                             }}
                             autoFocus
-                            onBlur={()=>this.setState({dropdownVisible:false})}
+                            onBlur={()=>this.setState({dropdownVisible:false,value:'',data:this.state.fullData})}
                             onChangeText={value => this.handleSearch(value)}
                         />
                         <VirtualizedList

@@ -8,27 +8,18 @@ import CustomInput from "./Component/Input/Input";
 
 class App extends Component {
 
-  /*handleCustomInputStates = (value, isEmail) => {
-    this.setState({isEmail})
-    if (isEmail)
-      this.setState({email: value}, () => console.log(this.state.email))
-    else
-      this.setState({phone: `+${value}`}, () => console.log(this.state.phone))
-  };*/
-
   render() {
     return (
       <View>
         <CustomInput
             onChange={(value,state)=>console.log(value+' >> '+state)}
             disableEmail={true}
+            labelTitle="Enter guest's Phone Number"
             style={{flex: 1,
               backgroundColor: 'white',
               alignItems: 'center',
-              color:'green',
+              color:'#3c3c3c',
               fontSize:18,
-              marginLeft:10,
-              fontWeight:600,
               fontFamily:'Nunito',
               justifyContent: 'center',}}
         />
