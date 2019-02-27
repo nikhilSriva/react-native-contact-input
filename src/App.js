@@ -8,43 +8,34 @@ import CustomInput from "./Component/Input/Input";
 
 class App extends Component {
 
+  /*handleCustomInputStates = (value, isEmail) => {
+    this.setState({isEmail})
+    if (isEmail)
+      this.setState({email: value}, () => console.log(this.state.email))
+    else
+      this.setState({phone: `+${value}`}, () => console.log(this.state.phone))
+  };*/
+
   render() {
     return (
-      <View style={styles.container}>
-        <CustomInput/>
+      <View>
+        <CustomInput
+            onChange={(value,state)=>console.log(value+' >> '+state)}
+            disableEmail={true}
+            style={{flex: 1,
+              backgroundColor: 'white',
+              alignItems: 'center',
+              color:'green',
+              fontSize:18,
+              marginLeft:10,
+              fontWeight:600,
+              fontFamily:'Nunito',
+              justifyContent: 'center',}}
+        />
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 300,
-    height: 300,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  button: {
-    borderRadius: 3,
-    padding: 20,
-    marginVertical: 10,
-    marginTop: 10,
-    backgroundColor: '#1B95E0',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 
 let hotWrapper = () => () => App;
 if (Platform.OS === 'web') {
