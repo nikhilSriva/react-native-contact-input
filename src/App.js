@@ -13,8 +13,8 @@ class App extends Component {
       <View>
         <CustomInput
             onChange={(value,state)=>console.log(value+' >> '+state)}
-            disableEmail={true}
-            labelTitle="Enter guest's Phone Number"
+            disablePhoneNumber={true}
+            labelTitle={"Enter address"}
             style={{flex: 1,
               backgroundColor: 'white',
               alignItems: 'center',

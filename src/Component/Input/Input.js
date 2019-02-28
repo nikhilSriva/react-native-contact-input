@@ -5,10 +5,8 @@ import PropTypes from 'prop-types';
 
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
-const emailRegex = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@]+(\\.[^<>()\\[\\]\\\\.,;:\\s@]+)*)|(.+))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
-
+const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
-
 
 export class CustomInput extends React.Component {
     constructor(props) {
@@ -19,21 +17,23 @@ export class CustomInput extends React.Component {
             wrongFormatPhoneNumber: false,
             dialCode: 91,
             countryCode: 'IN',
-            isEmail: this.props.disableEmail===undefined&&this.props.disablePhoneNumber===undefined?false:props.disablePhoneNumber ? true : null,
+            // isEmail: props.disableEmail===undefined&&props.disablePhoneNumber===undefined?false:props.disableEmail ? false : null,
+            isEmail: props.disableEmail ? false : true,
             color: '#DCDCDC',
             borderBottomWidth: 1,
-            isNumber: this.props.disableEmail===undefined&&this.props.disablePhoneNumber===undefined?false:props.disableEmail ? true : null,
-            labelTitle: this.props.disableEmail===undefined&&this.props.disablePhoneNumber===undefined?'Email or Phone Number':this.props.labelTitle,
+            // isNumber: props.disableEmail===undefined&&props.disablePhoneNumber===undefined?false:props.disablePhoneNumber ? false : null,
+            isNumber: props.disablePhoneNumber ? false : true,
+            labelTitle: props.labelTitle,
             errorState: false,
             count: 1,
             isFirstInputNumCheck: 1
         };
-        if (props.disablePhoneNumber === true) {
-            this.setState({isEmail: true, labelTitle: this.props.labelTitle})
-        } else if (props.disableEmail === true) {
-            this.setState({isNumber: true, labelTitle: this.props.labelTitle})
+        if (props.disableEmail === true) {
+            this.setState({isEmail:false,isNumber: true, labelTitle: this.props.labelTitle})
         }
-
+        if (props.disablePhoneNumber === true) {
+            this.setState({isEmail: true,isNumber:false, labelTitle:this.props.labelTitle})
+        }
     }
 
     validationEmail = (value) => {
@@ -73,7 +73,8 @@ export class CustomInput extends React.Component {
     };
 
     inputValidation = (e) => {
-        if (alphabetRegex.test(e.target.value) === true) {
+        if (alphabetRegex.test(e.target.value) === true)
+        {
             if (this.props.disableEmail === true)
                 this.setState({wrongFormatPhoneNumber: true, isNumber: true});
             else {
@@ -83,13 +84,13 @@ export class CustomInput extends React.Component {
                     ++c;
                     this.setState({isFirstInputNumCheck: c})
                 } else
-                    this.setState({value: e.target.value})
-                this.setState({isEmail: true, isNumber: false, labelTitle: 'Enter guest\'s Email',});
+                    this.setState({value: e.target.value});
+                this.setState({isEmail: true, isNumber: false, labelTitle: this.props.labelTitle,});
                 this.validationEmail(this.state.value);
             }
         } else if (e.target.value === '')
             this.setState({
-                labelTitle: this.props.disablePhoneNumber===undefined&&this.props.disableEmail===undefined?'Email or Phone Number':this.props.disableEmail === true ? 'Enter guest\'s Phone Number' : 'Enter guest\'s Email',
+                labelTitle: this.props.disablePhoneNumber===undefined&&this.props.disableEmail===undefined?'Email or Phone Number':this.props.disableEmail === true ? this.props.labelTitle : this.props.labelTitle,
                 value: e.target.value,
                 isEmail: this.props.disablePhoneNumber ? true : null,
                 isNumber: this.props.disableEmail ? true : null,
@@ -97,17 +98,22 @@ export class CustomInput extends React.Component {
                 isFirstInputNumCheck: 1,
                 dialCode: 91
             });
-        else if (numberRegex.test(e.target.value[0]) === true) {
+        else if (numberRegex.test(e.target.value[0]) === true)
+        {
             if (this.props.disablePhoneNumber === true)
-                this.setState({errorState: true, isEmail: true})
-            else {
+            {
+                console.log('sqqqq')
+                this.setState({errorState: true, isEmail: true,value:e.target.value})
+            }
+            else
+                {
                 this.setState({dialCode: this.state.dialCode});
                 if (this.state.count === 1) {
                     this.setState({
                         value: this.state.dialCode + e.target.value,
                         isEmail: false,
                         isNumber: true,
-                        labelTitle: 'Enter guest\'s Phone Number',
+                        labelTitle: this.props.labelTitle,
                         errorState: false
                     });
                     let c = this.state.count;
@@ -117,7 +123,7 @@ export class CustomInput extends React.Component {
                     this.setState({
                         isEmail: false,
                         isNumber: true,
-                        labelTitle: 'Enter guest\'s Phone Number',
+                        labelTitle: this.props.labelTitle,
                         value: e.target.value,
                         errorState: false
                     })
@@ -146,20 +152,14 @@ export class CustomInput extends React.Component {
 
     render() {
         const {style}=this.props
-        console.log('normal',style)
         const errorStyles=StyleSheet.flatten([this.props.style,styles.errorLabelStyle])
         const errorStyle={...errorStyles}
-        console.log('err',errorStyle)
 
         return (
             <View style={style}>
                 <View>
                     <View style={{marginVertical: 2}}>
                         {this.state.isEmail ?
-                            this.state.labelTitle === 'Enter guest\'s Email' ?
-                                <Text style={style}>
-                                    {this.state.labelTitle}
-                                </Text> :
                                 <Text style={style}>
                                     {this.state.labelTitle}
                                 </Text> :
@@ -244,8 +244,7 @@ export class CustomInput extends React.Component {
                     </View>
                     <View style={{zIndex: -99}}>
                         {this.state.errorState ?
-                            this.state.labelTitle === 'Enter guest\'s Email' ?
-                                <Text style={errorStyle}>Invalid Email</Text> : null : null
+                                <Text style={errorStyle}>Invalid Email</Text> : null
                         }
                         {
                             this.state.wrongFormatPhoneNumber ?
@@ -281,5 +280,10 @@ CustomInput.propTypes = {
     style: PropTypes.object.isRequired,
     labelTitle: PropTypes.string
 };
+CustomInput.defaultProps={
+    disableEmail:false,
+    disablePhoneNumber:false,
+    labelTitle:''
+}
 
 export default CustomInput;
