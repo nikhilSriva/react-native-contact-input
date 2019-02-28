@@ -15,13 +15,11 @@ export class CustomInput extends React.Component {
             value: '',
             email: '',
             wrongFormatPhoneNumber: false,
-            dialCode: 91,
-            countryCode: 'IN',
-            // isEmail: props.disableEmail===undefined&&props.disablePhoneNumber===undefined?false:props.disableEmail ? false : null,
+            countryCode: props.defaultCountry||'IN',
             isEmail: props.disableEmail ? false : true,
+            dialCode:phoneUtil.getCountryCodeForRegion(props.defaultCountry),
             color: '#DCDCDC',
             borderBottomWidth: 1,
-            // isNumber: props.disableEmail===undefined&&props.disablePhoneNumber===undefined?false:props.disablePhoneNumber ? false : null,
             isNumber: props.disablePhoneNumber ? false : true,
             labelTitle: props.labelTitle,
             errorState: false,
@@ -56,8 +54,8 @@ export class CustomInput extends React.Component {
     };
 
     handlePhoneNumberValidation = (number) => {
-        if (number !== '') {
-            console.log(typeof this.state.countryCode)
+        if (number !== ''&&number.toString().length!==1)
+        {
             const phoneNumber = phoneUtil.parseAndKeepRawInput(number, this.state.countryCode);
             if (phoneUtil.isValidNumber(phoneNumber))
                 this.setState({wrongFormatPhoneNumber: false});
@@ -90,21 +88,18 @@ export class CustomInput extends React.Component {
             }
         } else if (e.target.value === '')
             this.setState({
-                labelTitle: this.props.disablePhoneNumber===undefined&&this.props.disableEmail===undefined?'Email or Phone Number':this.props.disableEmail === true ? this.props.labelTitle : this.props.labelTitle,
+                labelTitle: this.props.disablePhoneNumber===false&&this.props.disableEmail===false?this.props.labelTitle:this.props.disableEmail === true ? this.props.labelTitle : this.props.labelTitle,
                 value: e.target.value,
-                isEmail: this.props.disablePhoneNumber ? true : null,
-                isNumber: this.props.disableEmail ? true : null,
+                isEmail: this.props.disablePhoneNumber ? true : false,
+                isNumber: this.props.disableEmail ? true : false,
                 count: 1,
                 isFirstInputNumCheck: 1,
-                dialCode: 91
+                dialCode:this.state.dialCode
             });
         else if (numberRegex.test(e.target.value[0]) === true)
         {
             if (this.props.disablePhoneNumber === true)
-            {
-                console.log('sqqqq')
                 this.setState({errorState: true, isEmail: true,value:e.target.value})
-            }
             else
                 {
                 this.setState({dialCode: this.state.dialCode});
@@ -142,7 +137,7 @@ export class CustomInput extends React.Component {
 
     setDialCode = (dialCode, countryCode) => {
         this.setState({dialCode});
-        this.setState({countryCode}, () => console.log(this.state.countryCode));
+        this.setState({countryCode});
         let phoneValue = this.state.value.substring(this.state.dialCode.toString().length, this.state.value.length);
         this.setState({
             value: dialCode + phoneValue,
@@ -181,6 +176,7 @@ export class CustomInput extends React.Component {
                                     <FlagSelect
                                         handleCode={this.setDialCode}
                                         color={this.state.color}
+                                        defaultCountry={this.props.defaultCountry}
                                     />
                                     :
                                     null
@@ -236,7 +232,7 @@ export class CustomInput extends React.Component {
                                                 borderBottomWidth: 1
                                             }, this.handlePhoneNumberValidation(this.state.value))
                                         }}
-                                placeholder={this.props.disableEmail===undefined&&this.props.disablePhoneNumber===undefined?'Email or Phone Number':this.props.disableEmail ? "Phone Number" : "Email"}
+                                placeholder={this.props.disableEmail===false&&this.props.disablePhoneNumber===false?'Email or Phone Number':this.props.disableEmail ? "Phone Number" : "Email"}
                                 onChange={(e) => this.inputValidation(e)}
                                 onKeyPress={this.handleKeyPress}
                             />
@@ -278,12 +274,14 @@ CustomInput.propTypes = {
     disablePhoneNumber: PropTypes.bool,
     onChange: PropTypes.func,
     style: PropTypes.object.isRequired,
-    labelTitle: PropTypes.string
+    labelTitle: PropTypes.string,
+    defaultCountry:PropTypes.string
 };
 CustomInput.defaultProps={
     disableEmail:false,
     disablePhoneNumber:false,
-    labelTitle:''
+    labelTitle:'',
+    defaultCountry:''
 }
 
 export default CustomInput;

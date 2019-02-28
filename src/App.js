@@ -13,8 +13,9 @@ class App extends Component {
       <View>
         <CustomInput
             onChange={(value,state)=>console.log(value+' >> '+state)}
-            disablePhoneNumber={true}
-            labelTitle={"Enter address"}
+            defaultCountry={'AL'}
+            disableEmail={true}
+            labelTitle={"Enter contact"}
             style={{flex: 1,
               backgroundColor: 'white',
               alignItems: 'center',

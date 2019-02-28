@@ -1,7 +1,8 @@
-import React from 'react';
+import React,{useMemo} from 'react';
 import {Text, TextInput, View, Image, TouchableWithoutFeedback, VirtualizedList,TouchableHighlight} from 'react-native';
 import countryData from './Data/CountriesData'
 import * as _ from 'lodash';
+import CountryTile from "./CountryTile/CountryTile";
 
 export class FlagSelect extends React.Component {
     constructor(props) {
@@ -9,15 +10,35 @@ export class FlagSelect extends React.Component {
         this.state = {
             value: '',
             dropdownVisible: false,
-            flagIcon: 'http://flags.ox3.in/svg/in.svg',
-            dialCode: 91,
+            defaultCountry:props.defaultCountry?props.defaultCountry:'IN',
+            flagIcon: props.defaultCountry?`http://flags.ox3.in/svg/${props.defaultCountry.toLowerCase()}.svg`:'http://flags.ox3.in/svg/in.svg',
             modalVisible: false,
             fullData: countryData,
             data: countryData,
             query: '',
         };
+        if(!_.isEmpty(props.defaultCountry)){
+            countryData.map((item)=>{
+                if(props.defaultCountry.toLowerCase()===item.code.toLowerCase())
+                {
+                    this.state={
+                        fullData: countryData,
+                        data: countryData,
+                        dialCode:item.dialCode,
+                        flagIcon: `http://flags.ox3.in/svg/${props.defaultCountry.toLowerCase()}.svg`
+                    }
+                }
+            })
+        }
     }
+    /*shouldComponentUpdate(nextProps, nextState, nextContext) {
+        // console.log('nextState',nextState)
+        if(this.state===nextState)
+            return false
+        else
+            return true
 
+    }*/
     showDropdown = () => {
         this.setState({dropdownVisible: !this.state.dropdownVisible})
     };
@@ -29,13 +50,11 @@ export class FlagSelect extends React.Component {
             return false;
     };
 
-
     handleSearch = (text) => {
         const data = _.filter(this.state.fullData, user => {
             return this.containsName(user, text);
         });
         this.setState({query: text, value: text, data})
-
     }
     handleMultiFunctions = (item) => {
         this.setState({
@@ -43,6 +62,24 @@ export class FlagSelect extends React.Component {
             dropdownVisible: false
         });
         this.props.handleCode(item.dialCode,item.code)
+    }
+
+    renderVirtualizedList=()=>{
+        return(
+                <VirtualizedList
+                    data={this.state.data}
+                    getItemCount={data => data.length}
+                    getItem={(data, index) => data[index]}
+                    renderItem={({item, key}) => (
+                        <CountryTile
+                            key={key}
+                            item={item}
+                            handleMultiFunctions={this.handleMultiFunctions}
+                        />
+                    )
+                    }
+                />
+            )
     }
 
     render() {
@@ -88,26 +125,7 @@ export class FlagSelect extends React.Component {
                             onBlur={()=>this.setState({dropdownVisible:false,value:'',data:this.state.fullData})}
                             onChangeText={value => this.handleSearch(value)}
                         />
-                        <VirtualizedList
-                            data={this.state.data}
-                            getItemCount={data => data.length}
-                            getItem={(data, index) => data[index]}
-                            renderItem={({item, key}) => (
-                                <TouchableWithoutFeedback key={key} onPress={() => this.handleMultiFunctions(item)}>
-                                    <View key={key} style={{
-                                        flexDirection: 'row',
-                                        marginBottom: 4,
-                                        paddingHorizontal: 5,
-                                        paddingVertical: 2
-                                    }}>
-                                        <Image source={{uri: item.url + item.code.toLowerCase() + '.svg'}}
-                                               style={{width: 25, height: 25}}/>
-                                        <Text>{item.name}</Text>
-                                    </View>
-                                </TouchableWithoutFeedback>
-                            )
-                            }
-                        />
+                        {this.renderVirtualizedList()}
                     </View> : null}
             </View>
 
