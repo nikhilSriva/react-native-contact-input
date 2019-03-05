@@ -1,7 +1,20 @@
 {
-  "name": "creaternwapp",
+  "name": "dual-input-component",
   "version": "0.1.0",
+  "description": "single switchable component for email and phone number",
   "private": true,
+  "keywords": [
+    "react",
+    "react-native",
+    "react-native-web",
+    "phone number",
+    "flag",
+    "dial code",
+    "email",
+    "input",
+    "international",
+    "switchable"
+  ],
   "scripts": {
     "start": "./node_modules/.bin/react-native start",
     "start-clean": "rm -rf $TMPDIR/react-* && watchman watch-del-all && npm start -- --reset-cache",
@@ -77,6 +90,7 @@
     "resolve": "1.8.1",
     "sass-loader": "7.1.0",
     "style-loader": "0.23.0",
+    "terser": "^3.14.1",
     "terser-webpack-plugin": "1.1.0",
     "url-loader": "1.1.1",
     "webpack": "4.19.1",

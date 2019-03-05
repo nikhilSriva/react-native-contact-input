@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
   View,
   Platform,
 } from 'react-native';
@@ -13,9 +12,9 @@ class App extends Component {
       <View>
         <CustomInput
             onChange={(value,state)=>console.log(value+' >> '+state)}
-            defaultCountry={'AL'}
+            defaultCountry={'IN'}
+            labelTitle='Enter phone Number'
             disableEmail={true}
-            labelTitle={"Enter contact"}
             style={{flex: 1,
               backgroundColor: 'white',
               alignItems: 'center',
