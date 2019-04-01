@@ -21,16 +21,16 @@ export class CustomInput extends React.Component {
             color: '#DCDCDC',
             borderBottomWidth: 1,
             isNumber: props.disablePhoneNumber ? false : true,
-            labelTitle: props.labelTitle,
+            labelTitle:props.disablePhoneNumber===false&&props.disableEmail===false?'Enter Email or Phone Number':props.disableEmail?'Enter the Phone Number':'Enter the Email',
             errorState: false,
             count: 1,
             isFirstInputNumCheck: 1
         };
         if (props.disableEmail === true) {
-            this.setState({isEmail:false,isNumber: true, labelTitle: this.props.labelTitle})
+            this.setState({isEmail:false,isNumber: true, labelTitle: 'Enter the Phone number'})
         }
         if (props.disablePhoneNumber === true) {
-            this.setState({isEmail: true,isNumber:false, labelTitle:this.props.labelTitle})
+            this.setState({isEmail: true,isNumber:false, labelTitle:'Enter the Email'})
         }
     }
 
@@ -48,7 +48,7 @@ export class CustomInput extends React.Component {
             if (this.state.email === "")
                 this.setState({
                     errorState: false,
-                })
+                });
             this._onChange(this.state.value, this.state.isEmail)
         })
     };
@@ -83,12 +83,12 @@ export class CustomInput extends React.Component {
                     this.setState({isFirstInputNumCheck: c})
                 } else
                     this.setState({value: e.target.value});
-                this.setState({isEmail: true, isNumber: false, labelTitle: this.props.labelTitle,});
+                this.setState({isEmail: true, isNumber: false, labelTitle: 'Enter the Email',});
                 this.validationEmail(this.state.value);
             }
         } else if (e.target.value === '')
             this.setState({
-                labelTitle: this.props.disablePhoneNumber===false&&this.props.disableEmail===false?this.props.labelTitle:this.props.disableEmail === true ? this.props.labelTitle : this.props.labelTitle,
+                labelTitle: this.props.disablePhoneNumber===false&&this.props.disableEmail===false?'Enter Email or Phone Number':this.props.disableEmail?'Enter the Phone Number':'Enter the Email',
                 value: e.target.value,
                 isEmail: this.props.disablePhoneNumber ? true : false,
                 isNumber: this.props.disableEmail ? true : false,
@@ -108,7 +108,7 @@ export class CustomInput extends React.Component {
                         value: this.state.dialCode + e.target.value,
                         isEmail: false,
                         isNumber: true,
-                        labelTitle: this.props.labelTitle,
+                        labelTitle: 'Enter the Phone Number',
                         errorState: false
                     });
                     let c = this.state.count;
@@ -118,7 +118,7 @@ export class CustomInput extends React.Component {
                     this.setState({
                         isEmail: false,
                         isNumber: true,
-                        labelTitle: this.props.labelTitle,
+                        labelTitle: 'Enter the Phone Number',
                         value: e.target.value,
                         errorState: false
                     })
@@ -145,20 +145,24 @@ export class CustomInput extends React.Component {
 
     };
 
-    render() {
-        const {style}=this.props
-        const errorStyles=StyleSheet.flatten([this.props.style,styles.errorLabelStyle])
+    render()
+    {
+        const {style,labelStyle,inputFieldStyle}=this.props;
+        const errorStyles=StyleSheet.flatten([this.props.labelStyle,styles.errorLabelStyle])
         const errorStyle={...errorStyles}
+        const inputWidth=style.width+48;
 
         return (
             <View style={style}>
-                <View>
+                <View style={{width:'100%'}}>
                     <View style={{marginVertical: 2}}>
-                        {this.state.isEmail ?
-                                <Text style={style}>
+                        {
+                            this.state.isEmail ?
+                                <Text style={[labelStyle,{width:inputWidth}]}>
                                     {this.state.labelTitle}
-                                </Text> :
-                            <Text style={style}>
+                                </Text>
+                                :
+                            <Text style={[labelStyle,{width:inputWidth}]}>
                                 {this.state.labelTitle}
                             </Text>
                         }
@@ -191,26 +195,18 @@ export class CustomInput extends React.Component {
                             <TextInput
                                 type={this.state.isEmail ? 'text' : 'number'}
                                 autoCorrect={false}
-                                style={this.state.isEmail ?
-                                    [styles.inputStyles, {
-                                    flex: 1, height: 30,
-                                    width:244,
-                                    borderColor: this.state.color,
-                                    borderBottomWidth: this.state.borderBottomWidth
-                                }] :
+
+                               style={[inputFieldStyle,styles.textInputCommonStyle,
+                                   {borderColor: this.state.color,
+                                   borderBottomWidth: this.state.borderBottomWidth},
+                                   this.state.isEmail ?
+                                       {width:inputWidth}
+                                     :
                                     this.state.isNumber?
-                                        [styles.inputStyles, {
-                                            flex:1,
-                                            width:196,
-                                            borderColor: this.state.color, height: 30,
-                                            borderBottomWidth: this.state.borderBottomWidth}]
+                                        {width:style.width}
                                         :
-                                    [styles.inputStyles, {
-                                    flex:1,
-                                    width:244,
-                                    borderColor: this.state.color, height: 30,
-                                    borderBottomWidth: this.state.borderBottomWidth
-                                }]}
+                                        {width:inputWidth}
+                                        ]}
                                 value={this.state.value}
                                 onFocus={() => this.setState({color: '#0098EF', borderBottomWidth: 2})}
                                 onBlur={this.state.isEmail === false && this.state.isNumber === false ? () => {
@@ -221,7 +217,6 @@ export class CustomInput extends React.Component {
                                     } :
                                     this.state.isEmail ?
                                         () => {
-
                                             this.setState({
                                                 color: '#DCDCDC',
                                                 borderBottomWidth: 1
@@ -255,9 +250,11 @@ export class CustomInput extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    inputStyles: {
-        fontSize: 18,
-        outline: 'none',
+    textInputCommonStyle:{
+        outline:'none',
+        flex: 1,
+        height: 30,
+
     },
     errorLabelStyle: {
         fontSize:15,
@@ -275,6 +272,8 @@ CustomInput.propTypes = {
     onChange: PropTypes.func,
     style: PropTypes.object.isRequired,
     labelTitle: PropTypes.string,
+    labelStyle: PropTypes.object,
+    inputFieldStyle: PropTypes.object,
     defaultCountry:PropTypes.string
 };
 CustomInput.defaultProps={

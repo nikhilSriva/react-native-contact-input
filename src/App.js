@@ -3,24 +3,23 @@ import {
   View,
   Platform,
 } from 'react-native';
-import CustomInput from "./Component/Input/Input";
+import CustomInput from "./Component/Input";
 
-class App extends Component {
-
-  render() {
+class App extends Component
+{
+  render()
+  {
     return (
       <View>
         <CustomInput
             onChange={(value,state)=>console.log(value+' >> '+state)}
             defaultCountry={'IN'}
-            labelTitle='Enter phone Number'
-            disableEmail={true}
-            style={{flex: 1,
+            labelStyle={{color:'#3c3c3c',fontSize:18,fontFamily:'Nunito'}}
+            inputFieldStyle={{color:'#3c3c3c',fontSize:15,fontFamily:'Nunito'}}
+            style={{
+              width:200,
               backgroundColor: 'white',
               alignItems: 'center',
-              color:'#3c3c3c',
-              fontSize:18,
-              fontFamily:'Nunito',
               justifyContent: 'center',}}
         />
       </View>

@@ -31,6 +31,7 @@
     "coverage:native": "node scripts/test.js --config \"./config/native.jest.config.js\" --coverage"
   },
   "dependencies": {
+    "animated": "^0.2.2",
     "google-libphonenumber": "^3.2.2",
     "lodash": "^4.17.11",
     "react": "^16.6.x",

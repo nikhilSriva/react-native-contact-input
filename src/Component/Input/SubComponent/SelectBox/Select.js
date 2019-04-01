@@ -1,7 +1,8 @@
-import React,{useMemo} from 'react';
-import {Text, TextInput, View, Image, TouchableWithoutFeedback, VirtualizedList,TouchableHighlight} from 'react-native';
+import React, {useMemo} from 'react';
+import {TextInput, View, Image, Animated, VirtualizedList, TouchableHighlight,TouchableOpacity} from 'react-native';
 import countryData from './Data/CountriesData'
 import * as _ from 'lodash';
+
 import CountryTile from "./CountryTile/CountryTile";
 
 export class FlagSelect extends React.Component {
@@ -10,27 +11,43 @@ export class FlagSelect extends React.Component {
         this.state = {
             value: '',
             dropdownVisible: false,
-            defaultCountry:props.defaultCountry?props.defaultCountry:'IN',
-            flagIcon: props.defaultCountry?`http://flags.ox3.in/svg/${props.defaultCountry.toLowerCase()}.svg`:'http://flags.ox3.in/svg/in.svg',
+            defaultCountry: props.defaultCountry ? props.defaultCountry : 'IN',
+            flagIcon: props.defaultCountry ? `http://flags.ox3.in/svg/${props.defaultCountry.toLowerCase()}.svg` : 'http://flags.ox3.in/svg/in.svg',
             modalVisible: false,
             fullData: countryData,
             data: countryData,
             query: '',
+            animation: new Animated.Value()
         };
-        if(!_.isEmpty(props.defaultCountry)){
-            countryData.map((item)=>{
-                if(props.defaultCountry.toLowerCase()===item.code.toLowerCase())
-                {
-                    this.state={
+        if (!_.isEmpty(props.defaultCountry)) {
+            countryData.map((item) => {
+                if (props.defaultCountry.toLowerCase() === item.code.toLowerCase()) {
+                    this.state = {
                         fullData: countryData,
                         data: countryData,
-                        dialCode:item.dialCode,
+                        dialCode: item.dialCode,
                         flagIcon: `http://flags.ox3.in/svg/${props.defaultCountry.toLowerCase()}.svg`
                     }
                 }
             })
         }
+
+
     }
+
+    /* animate = () => {
+         animatedValue.setValue(0)
+         Animated.timing(
+             animatedValue,
+             {
+                 toValue: 1,
+                 duration: 1000,
+                 easing: Easing.elastic(1)
+             }
+         ).start();
+     }*/
+
+
     /*shouldComponentUpdate(nextProps, nextState, nextContext) {
         // console.log('nextState',nextState)
         if(this.state===nextState)
@@ -39,12 +56,12 @@ export class FlagSelect extends React.Component {
             return true
 
     }*/
-    showDropdown = () => {
+    showDropdown = (e) => {
         this.setState({dropdownVisible: !this.state.dropdownVisible})
     };
 
     containsName = ({name}, query) => {
-        if(name.toLowerCase().includes(query))
+        if (name.toLowerCase().includes(query))
             return true;
         else
             return false;
@@ -54,6 +71,7 @@ export class FlagSelect extends React.Component {
         const data = _.filter(this.state.fullData, user => {
             return this.containsName(user, text);
         });
+
         this.setState({query: text, value: text, data})
     }
     handleMultiFunctions = (item) => {
@@ -61,72 +79,78 @@ export class FlagSelect extends React.Component {
             flagIcon: item.url + item.code.toLowerCase() + '.svg',
             dropdownVisible: false
         });
-        this.props.handleCode(item.dialCode,item.code)
+        this.props.handleCode(item.dialCode, item.code)
     }
 
-    renderVirtualizedList=()=>{
-        return(
-                <VirtualizedList
-                    data={this.state.data}
-                    getItemCount={data => data.length}
-                    getItem={(data, index) => data[index]}
-                    renderItem={({item, key}) => (
-                        <CountryTile
-                            key={key}
-                            item={item}
-                            handleMultiFunctions={this.handleMultiFunctions}
-                        />
-                    )
-                    }
-                />
-            )
-    }
+    renderVirtualizedList = () => {
+        return (
+            <VirtualizedList
+                data={this.state.data}
+                getItemCount={data => data.length}
+                getItem={(data, index) => data[index]}
+                renderItem={({item, key}) => (
+                    <CountryTile
+                        key={key}
+                        item={item}
+                        handleMultiFunctions={this.handleMultiFunctions}
+                    />
+                )
+                }
+            />
+        )
+    };
 
     render() {
         return (
-            <View style={{flex:1, justifyContent:'center',alignItems:'center'}}>
-                <View style={{flexDirection: 'row'}}>
-                    <TouchableHighlight onPress={() => this.showDropdown()} style={{width:48,height:20,flexDirection:'row',}}>
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{flexDirection: 'row',backgroundColor:'transparent'}}>
+                    <TouchableOpacity underlayColor='none' onPress={(e) => this.showDropdown(e)}
+                                        style={{width: 48, height: 20, flexDirection: 'row',}}>
                         <Image source={{uri: this.state.flagIcon}}
                                style={{width: 30, height: 20, borderRadius: 6}}/>
-                    </TouchableHighlight>
+                    </TouchableOpacity>
                 </View>
                 {this.state.dropdownVisible ?
-                    <View style={{
-                        borderColor: '#ccc',
-                        borderWidth: 1,
-                        borderRadius: 7,
-                        width: 220,
-                        top:29,
-                        left:0,
-                        // marginTop: 24,//for chrome
-                        // marginTop: 5,//for IE
-                        marginBottom: 5,
-                        height: 200,
-                        paddingBottom:10,
-                        backgroundColor:'white',
-                        position:'absolute',
-                        zIndex:10,
-                    }}>
-                        <TextInput
-                            value={this.state.value}
-                            placeholder="Search Here..."
-                            style={{
-                                borderWidth: 0.5,
-                                padding: 5,
-                                outline:'none',
-                                marginHorizontal: 5,
-                                borderColor: '#ccc',
-                                borderRadius: 6,
-                                marginBottom: 3,
-                                marginTop: 3
-                            }}
-                            autoFocus
-                            onBlur={()=>this.setState({dropdownVisible:false,value:'',data:this.state.fullData})}
-                            onChangeText={value => this.handleSearch(value)}
-                        />
-                        {this.renderVirtualizedList()}
-                    </View> : null}
+                    <Animated.View>
+                        <View style={{
+                            borderColor: '#ccc',
+                            borderWidth: 1,
+                            borderRadius: 7,
+                            width: 220,
+                            top: 29,
+                            left: 0,
+                            // marginTop: 24,//for chrome
+                            // marginTop: 5,//for IE
+                            marginBottom: 5,
+                            height: 200,
+                            paddingBottom: 10,
+                            backgroundColor: 'white',
+                            position: 'absolute',
+                            zIndex: 10,
+                        }}>
+                            <TextInput
+                                value={this.state.value}
+                                placeholder="Search Here..."
+                                style={{
+                                    borderWidth: 0.5,
+                                    padding: 5,
+                                    outline: 'none',
+                                    marginHorizontal: 5,
+                                    borderColor: '#ccc',
+                                    borderRadius: 6,
+                                    marginBottom: 3,
+                                    marginTop: 3
+                                }}
+                                autoFocus
+                                onBlur={() => this.setState({
+                                    dropdownVisible: false,
+                                    value: '',
+                                    data: this.state.fullData
+                                })}
+                                onChangeText={value => this.handleSearch(value)}
+                            />
+                            {this.renderVirtualizedList()}
+                        </View></Animated.View> : null}
             </View>
 
         )
