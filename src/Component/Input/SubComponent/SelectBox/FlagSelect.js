@@ -104,11 +104,10 @@ export class FlagSelect extends React.Component {
         }
             else {
                 if (e.key === 'Enter') {
-                    if (this.state.cursor !== 0) {
-                        if (this.props.onItemSelected) {
-                            this.props.onItemSelected(this.VTListRef.props.data[--this.state.cursor])
-                            this.setState({value: this.VTListRef.props.data[this.state.cursor][this.props.searchQuery]})
-                        }
+                    if (this.state.cursor !== 0)
+                    {
+                        this.handleMultiFunctions(this.VTListRef.props.data[--this.state.cursor])
+
                     }
                 }
             }
