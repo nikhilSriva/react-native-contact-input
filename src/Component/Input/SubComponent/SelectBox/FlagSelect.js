@@ -1,16 +1,26 @@
-import React, {useMemo} from 'react';
-import {TextInput, View, Image, Animated, VirtualizedList, TouchableHighlight, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {
+    TextInput,
+    Text,
+    View,
+    Image,
+    Animated,
+    VirtualizedList,
+    TouchableHighlight,
+    TouchableOpacity
+} from 'react-native';
 import countryData from './Data/CountriesData';
 import * as _ from 'lodash';
 
 import CountryTile from "./CountryTile/CountryTile";
 
+const isIE = /*@cc_on!@*/false || !!document.documentMode;
 export class FlagSelect extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             cursor: 0,
-            counter:0,
+            counter: 0,
             value: '',
             dropdownVisible: false,
             defaultCountry: props.defaultCountry ? props.defaultCountry : 'IN',
@@ -19,7 +29,6 @@ export class FlagSelect extends React.Component {
             fullData: countryData,
             data: countryData,
             query: '',
-            animation: new Animated.Value()
         };
         if (!_.isEmpty(props.defaultCountry)) {
             countryData.map((item) => {
@@ -38,27 +47,6 @@ export class FlagSelect extends React.Component {
 
     }
 
-    /* animate = () => {
-         animatedValue.setValue(0)
-         Animated.timing(
-             animatedValue,
-             {
-                 toValue: 1,
-                 duration: 1000,
-                 easing: Easing.elastic(1)
-             }
-         ).start();
-     }*/
-
-
-    /*shouldComponentUpdate(nextProps, nextState, nextContext) {
-        // console.log('nextState',nextState)
-        if(this.state===nextState)
-            return false
-        else
-            return true
-
-    }*/
     showDropdown = (e) => {
         this.setState({dropdownVisible: !this.state.dropdownVisible})
     };
@@ -80,7 +68,8 @@ export class FlagSelect extends React.Component {
     handleMultiFunctions = (item) => {
         this.setState({
             flagIcon: item.url + item.code.toLowerCase() + '.svg',
-            dropdownVisible: false
+            dropdownVisible: false,
+            dialCode: item.dialCode
         });
         this.props.handleCode(item.dialCode, item.code)
     }
@@ -93,24 +82,20 @@ export class FlagSelect extends React.Component {
             let c = this.state.cursor;
             --c;
             this.setState({cursor: c, counter}, () => this.handleScroll('up'))
-        } else
-            if (e.keyCode === 40 && cursor <= data.length - 1)
-            {
-                let counter = this.state.counter
-                ++counter;
-                let c = this.state.cursor;
-                ++c;
-                this.setState({cursor: c, counter}, () => this.handleScroll('down'))
-        }
-            else {
-                if (e.key === 'Enter') {
-                    if (this.state.cursor !== 0)
-                    {
-                        this.handleMultiFunctions(this.VTListRef.props.data[--this.state.cursor])
+        } else if (e.keyCode === 40 && cursor <= data.length - 1) {
+            let counter = this.state.counter
+            ++counter;
+            let c = this.state.cursor;
+            ++c;
+            this.setState({cursor: c, counter}, () => this.handleScroll('down'))
+        } else {
+            if (e.key === 'Enter') {
+                if (this.state.cursor !== 0) {
+                    this.handleMultiFunctions(this.VTListRef.props.data[--this.state.cursor])
 
-                    }
                 }
             }
+        }
     }
 
     handleScroll = (scrollType) => {
@@ -122,7 +107,7 @@ export class FlagSelect extends React.Component {
     }
 
 
-    renderVirtualizedList = (index,cursor) => {
+    renderVirtualizedList = (index, cursor) => {
         return (
             <VirtualizedList
                 data={this.state.data}
@@ -156,11 +141,19 @@ export class FlagSelect extends React.Component {
         const {cursor} = this.state
         return (
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <View style={{flexDirection: 'row', backgroundColor: 'transparent'}}>
+                <View style={{flexDirection: 'row',backgroundColor: 'transparent'}}>
                     <TouchableOpacity underlayColor='none' onPress={(e) => this.showDropdown(e)}
-                                      style={{width: 48, height: 20, flexDirection: 'row',}}>
-                        <Image source={{uri: this.state.flagIcon}}
-                               style={{width: 30, height: 20, borderRadius: 6}}/>
+                                      style={{minWidth:isIE?88:0,flex:1, height: 20, flexDirection: 'row'}}>
+                        <View style={{flex:1,flexDirection:'row'}}>
+                            <Image source={{uri: this.state.flagIcon}}
+                                   style={{width: 30, height: 20, borderRadius: 6}}/>
+                        </View>
+                        <View style={{flexDirection: 'row', backgroundColor: 'transparent', alignItems: 'center'}}>
+                            <Text style={[{
+                                paddingLeft: 5
+                            },this.props.inputFieldStyle]}>+{this.state.dialCode}</Text>
+                            <Text style={{color: '#3c3c3c', fontSize: 21, fontFamily: 'Nunito'}}> | </Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
                 {this.state.dropdownVisible ?
@@ -171,21 +164,21 @@ export class FlagSelect extends React.Component {
                                 this.setState({listContainerHeight: height})
                             }}
                             style={{
-                            borderColor: '#ccc',
-                            borderWidth: 1,
-                            borderRadius: 7,
-                            width: 220,
-                            top: 29,
-                            left: 0,
-                            // marginTop: 24,//for chrome
-                            // marginTop: 5,//for IE
-                            marginBottom: 5,
-                            height: 200,
-                            paddingBottom: 10,
-                            backgroundColor: 'white',
-                            position: 'absolute',
-                            zIndex: 10,
-                        }}>
+                                borderColor: '#ccc',
+                                borderWidth: 1,
+                                borderRadius: 7,
+                                width: 220,
+                                // top: 19,
+                                left: -44,
+                                marginTop: isIE?5:this.props.wrongFormatPhoneNumber?24:16,//for chrome
+                                // marginTop: 5,//for IE
+                                marginBottom: 5,
+                                height: 230,
+                                paddingBottom: 10,
+                                backgroundColor: 'white',
+                                position: 'absolute',
+                                zIndex: 10,
+                            }}>
                             <TextInput
                                 value={this.state.value}
                                 placeholder="Search Here..."
@@ -208,7 +201,7 @@ export class FlagSelect extends React.Component {
                                 onKeyPress={(e) => this.handleKeyDown(e)}
                                 onChangeText={value => this.handleSearch(value)}
                             />
-                            {this.renderVirtualizedList(index,cursor)}
+                            {this.renderVirtualizedList(index, cursor)}
                         </View></View> : null}
             </View>
 

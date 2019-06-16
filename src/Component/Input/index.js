@@ -1,14 +1,17 @@
 import React from 'react';
 import {Text, View, TextInput, StyleSheet, Image} from 'react-native'
-import FlagSelect from './SubComponent/SelectBox/Select'
+import FlagSelect from './SubComponent/SelectBox/FlagSelect'
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+let flag = false;
 
 export class CustomInput extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -21,7 +24,7 @@ export class CustomInput extends React.Component {
             color: '#DCDCDC',
             borderBottomWidth: 1,
             isNumber: props.disablePhoneNumber ? false : true,
-            labelTitle: props.disablePhoneNumber === false && props.disableEmail === false ? 'Enter Email or Phone Number' : props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
+            labelTitle: props.disablePhoneNumber === false && props.disableEmail === false ? 'Enter E<<mail or Phone Number' : props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
             errorState: false,
             count: 1,
             isFirstInputNumCheck: 1
@@ -56,12 +59,19 @@ export class CustomInput extends React.Component {
     handlePhoneNumberValidation = (number) => {
         if (number !== '' && number.toString().length !== 1) {
             const phoneNumber = phoneUtil.parseAndKeepRawInput(number, this.state.countryCode);
-            if (phoneUtil.isValidNumber(phoneNumber))
+            if (phoneUtil.isValidNumber(phoneNumber)) {
                 this.setState({wrongFormatPhoneNumber: false});
-            else
+            } else
                 this.setState({wrongFormatPhoneNumber: true});
         }
-        this._onChange(`+${this.state.value}`, this.state.isEmail)
+
+        const parsedObject = {
+            dialCode: `+${this.state.dialCode}`,
+            phoneNumber: this.state.value,
+            parsedNumber: `+${this.state.dialCode}${this.state.value}`
+        }
+        // this._onChange(`+${this.state.dialCode}${this.state.value}`, this.state.isEmail)
+        this._onChange(parsedObject, this.state.isEmail)
 
     };
 
@@ -74,24 +84,20 @@ export class CustomInput extends React.Component {
             if (this.props.disableEmail === true)
                 this.setState({wrongFormatPhoneNumber: true, isNumber: true});
             else {
-                console.log('...',e.target.value)
-                console.log('...>',e.target.value[e.target.value.search('[a-z]')-1])
-                if(e.target.value.search('[a-z]')-1){
-                    console.log('true')
-                    this.setState({charAfterNumberEntered:true})
-                }
-                console.log(e.target.value)
-                if (this.state.isFirstInputNumCheck === 1 && this.state.count !== 1) {
-                    this.setState({value: e.target.value.substring(this.state.dialCode.toString().length, e.target.value.length)});
-                    let c = this.state.isFirstInputNumCheck;
-                    ++c;
-                    this.setState({isFirstInputNumCheck: c})
-                } else
-                    this.setState({value: e.target.value});
+                /* if (e.target.value.search('[a-z]') - 1) {
+                     this.setState({charAfterNumberEntered: true})
+                 }*/
+                // if (this.state.isFirstInputNumCheck === 1 && this.state.count !== 1) {
+                //     this.setState({value: e.target.value.substring(this.state.dialCode.toString().length, e.target.value.length)});
+                //     let c = this.state.isFirstInputNumCheck;
+                //     ++c;
+                //     this.setState({isFirstInputNumCheck: c})
+                // } else
+                this.setState({value: e.target.value});
                 this.setState({isEmail: true, isNumber: false, labelTitle: 'Enter the Email',});
-                this.validationEmail(this.state.value);
+                // this.validationEmail(this.state.value);
             }
-        } else if (e.target.value === '')
+        } else if (e.target.value === '') {
             this.setState({
                 labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                 value: e.target.value,
@@ -100,48 +106,23 @@ export class CustomInput extends React.Component {
                 count: 1,
                 isFirstInputNumCheck: 1,
                 // dialCode: this.state.dialCode
-                dialCode: phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)
+                countryCode: this.state.countryCode,
+                // dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)
+                dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
             });
-
-        else if (numberRegex.test(e.target.value[0]) === true) {
+        } else if (numberRegex.test(e.target.value[0]) === true) {
             if (this.props.disablePhoneNumber === true)
                 this.setState({errorState: true, isEmail: true, value: e.target.value})
             else {
-                console.log('>>',e.target.value)
                 this.setState({dialCode: this.state.dialCode});
-                if(this.state.charAfterNumberEntered){
-                    console.log('LAL')
-                    this.setState({
-                        value: this.state.dialCode + e.target.value,
-                        isEmail: false,
-                        isNumber: true,
-                        labelTitle: 'Enter the Phone Number',
-                        errorState: false
-                    })
-                    this.setState({charAfterNumberEntered:false})
-                }
-               else if (this.state.count === 1) {
-                   console.log('w')
-                    this.setState({
-                        value: this.state.dialCode + e.target.value,
-                        isEmail: false,
-                        isNumber: true,
-                        labelTitle: 'Enter the Phone Number',
-                        errorState: false
-                    });
-                    let c = this.state.count;
-                    ++c;
-                    this.setState({count: c})
-                } else {
-                    console.log('q')
-                    this.setState({
-                        isEmail: false,
-                        isNumber: true,
-                        labelTitle: 'Enter the Phone Number',
-                        value: e.target.value,
-                        errorState: false
-                    })
-                }
+                // if (flag === true) {
+                this.setState({
+                    value: e.target.value,
+                    isEmail: false,
+                    isNumber: true,
+                    labelTitle: 'Enter the Phone Number',
+                    errorState: false
+                });
             }
         }
     };
@@ -150,39 +131,36 @@ export class CustomInput extends React.Component {
         if (e.keyCode === 8) {
             this.setState({wrongFormatPhoneNumber: false})
         }
-        if (e.keyCode === 8)
-        {
-            // console.log(`${e.target.value}___${phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)}`)
-            // if (e.target.value.toString() === phoneUtil.getCountryCodeForRegion(this.props.defaultCountry).toString())
-            if (e.target.value.toString() === this.state.dialCode.toString())
-            {
-                console.log('default')
+        if (e.keyCode === 8) {
+            /*if (e.target.value.toString() === this.state.dialCode.toString()) {
+                console.log('M')
                 this.setState({
                     value: '',
                     count: 1,
                     isFirstInputNumCheck: 1,
-
-
                     labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                     isEmail: this.props.disablePhoneNumber ? true : false,
                     isNumber: this.props.disableEmail ? true : false,
-                    dialCode: phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)
+                    dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)
                 })
-            }
+            }*/
         }
         if (e.keyCode === 8 && e.target.value.length === 1)
             this.setState({errorState: false})
     };
 
     setDialCode = (dialCode, countryCode) => {
-        console.log('asaas', dialCode)
-        console.log('QWEQE', countryCode)
-        this.setState({dialCode});
-        this.setState({countryCode});
-        let phoneValue = this.state.value.substring(this.state.dialCode.toString().length, this.state.value.length);
-        this.setState({
-            value: dialCode + phoneValue,
-        }, () => this.handlePhoneNumberValidation(this.state.value))
+        /*this.setState({dialCode});
+        this.setState({countryCode});*/
+        // let phoneValue = this.state.value.substring(this.state.dialCode.toString().length, this.state.value.length);
+        // console.log(',,,', phoneValue)
+        if (!_.isEmpty(this.state.value))
+            this.setState({
+                dialCode,
+                countryCode
+            }, () => {
+                this.handlePhoneNumberValidation(this.state.value)
+            })
 
     };
 
@@ -195,22 +173,27 @@ export class CustomInput extends React.Component {
         return (
             <View style={style}>
                 <View style={{width: '100%'}}>
-                    <View style={{marginVertical: 2}}>
-                        {
-                            this.state.isEmail ?
-                                <Text style={[labelStyle, {width: inputWidth}]}>
-                                    {this.state.labelTitle}
-                                </Text>
-                                :
-                                <Text style={[labelStyle, {width: inputWidth}]}>
-                                    {this.state.labelTitle}
-                                </Text>
-                        }
-                    </View>
+                    {
+                        !this.props.hideLabel ?
+                        <View style={{marginVertical: 2}}>
+                            {
+                                this.state.isEmail ?
+                                    <Text style={[labelStyle, {width: inputWidth}]}>
+                                        {this.state.labelTitle}
+                                    </Text>
+                                    :
+                                    <Text style={[labelStyle, {width: inputWidth}]}>
+                                        {this.state.labelTitle}
+                                    </Text>
+                            }
+                        </View> :
+                            null
+                    }
 
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
                         <View style={{
-                            flex: -1, borderColor: this.state.color,
+                            flex: -1,
+                            borderColor: this.state.color,
                             borderBottomWidth: this.state.borderBottomWidth, height: 30
                         }}>
                             {this.state.isEmail ?
@@ -219,9 +202,11 @@ export class CustomInput extends React.Component {
                                 this.state.isNumber ?
                                     <FlagSelect
                                         listItemStyle={this.props.listItemStyle}
+                                        inputFieldStyle={this.props.inputFieldStyle}
                                         handleCode={this.setDialCode}
                                         color={this.state.color}
-                                        defaultCountry={this.props.defaultCountry}
+                                        wrongFormatPhoneNumber={this.state.wrongFormatPhoneNumber}
+                                        defaultCountry={this.state.countryCode || this.props.defaultCountry}
                                     />
                                     :
                                     null
@@ -236,7 +221,6 @@ export class CustomInput extends React.Component {
                             <TextInput
                                 type={this.state.isEmail ? 'text' : 'number'}
                                 autoCorrect={false}
-
                                 style={[inputFieldStyle, styles.textInputCommonStyle,
                                     {
                                         borderColor: this.state.color,
@@ -314,9 +298,10 @@ CustomInput.propTypes = {
     disablePhoneNumber: PropTypes.bool,
     onChange: PropTypes.func,
     style: PropTypes.object.isRequired,
+    hideLabel:PropTypes.bool,
     labelTitle: PropTypes.string,
     labelStyle: PropTypes.object,
-    listItemStyle:PropTypes.object,
+    listItemStyle: PropTypes.object,
     inputFieldStyle: PropTypes.object,
     defaultCountry: PropTypes.string
 };
