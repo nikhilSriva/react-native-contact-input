@@ -1,50 +1,31 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet,
   View,
   Platform,
 } from 'react-native';
-import CustomInput from "./Component/Input/Input";
+import CustomInput from "./Component/Input";
 
-class App extends Component {
-
-  render() {
+class App extends Component
+{
+  render()
+  {
     return (
-      <View style={styles.container}>
-        <CustomInput/>
+      <View>
+        <CustomInput
+            onChange={(value,state)=>console.log(value+' >> '+state)}
+            defaultCountry={'IN'}
+            labelStyle={{color:'#3c3c3c',fontSize:18,fontFamily:'Nunito'}}
+            inputFieldStyle={{color:'#3c3c3c',fontSize:15,fontFamily:'Nunito'}}
+            style={{
+              width:200,
+              backgroundColor: 'white',
+              alignItems: 'center',
+              justifyContent: 'center',}}
+        />
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logo: {
-    width: 300,
-    height: 300,
-  },
-  title: {
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  button: {
-    borderRadius: 3,
-    padding: 20,
-    marginVertical: 10,
-    marginTop: 10,
-    backgroundColor: '#1B95E0',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-});
 
 let hotWrapper = () => () => App;
 if (Platform.OS === 'web') {
