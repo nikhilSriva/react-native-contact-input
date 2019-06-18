@@ -8,7 +8,6 @@ const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
-let flag = false;
 
 export class CustomInput extends React.Component {
 
@@ -24,7 +23,7 @@ export class CustomInput extends React.Component {
             color: '#DCDCDC',
             borderBottomWidth: 1,
             isNumber: props.disablePhoneNumber ? false : true,
-            labelTitle: props.disablePhoneNumber === false && props.disableEmail === false ? 'Enter E<<mail or Phone Number' : props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
+            labelTitle: props.disablePhoneNumber === false && props.disableEmail === false ? 'Enter Email or Phone Number' : props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
             errorState: false,
             count: 1,
             isFirstInputNumCheck: 1
@@ -175,18 +174,18 @@ export class CustomInput extends React.Component {
                 <View style={{width: '100%'}}>
                     {
                         !this.props.hideLabel ?
-                        <View style={{marginVertical: 2}}>
-                            {
-                                this.state.isEmail ?
-                                    <Text style={[labelStyle, {width: inputWidth}]}>
-                                        {this.state.labelTitle}
-                                    </Text>
-                                    :
-                                    <Text style={[labelStyle, {width: inputWidth}]}>
-                                        {this.state.labelTitle}
-                                    </Text>
-                            }
-                        </View> :
+                            <View style={{marginVertical: 2}}>
+                                {
+                                    this.state.isEmail ?
+                                        <Text style={[labelStyle, {width: inputWidth}]}>
+                                            {this.state.labelTitle}
+                                        </Text>
+                                        :
+                                        <Text style={[labelStyle, {width: inputWidth}]}>
+                                            {this.state.labelTitle}
+                                        </Text>
+                                }
+                            </View> :
                             null
                     }
 
@@ -296,9 +295,9 @@ const styles = StyleSheet.create({
 CustomInput.propTypes = {
     disableEmail: PropTypes.bool,
     disablePhoneNumber: PropTypes.bool,
-    onChange: PropTypes.func,
+    onChange: PropTypes.func.isRequired,
     style: PropTypes.object.isRequired,
-    hideLabel:PropTypes.bool,
+    hideLabel: PropTypes.bool,
     labelTitle: PropTypes.string,
     labelStyle: PropTypes.object,
     listItemStyle: PropTypes.object,
@@ -309,7 +308,14 @@ CustomInput.defaultProps = {
     disableEmail: false,
     disablePhoneNumber: false,
     labelTitle: '',
-    defaultCountry: ''
+    defaultCountry: '',
+    listItemStyle: {height: 60},
+    style: {
+        width: 200,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 }
 
 export default CustomInput;
