@@ -1,8 +1,21 @@
 import React from 'react';
-import {Text, View, TextInput, StyleSheet, Image} from 'react-native'
+import {
+    Text,
+    View,
+    TextInput,
+    StyleSheet,
+    Animated,
+    Platform,
+    TouchableWithoutFeedback
+} from 'react-native'
 import FlagSelect from './SubComponent/SelectBox/FlagSelect'
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import Lottie from 'react-lottie';
+import * as crossAnimationData from '../Input/lottieFiles/cross'
+import * as tickAnimationData from '../Input/lottieFiles/tick'
+
+import LottieView from 'lottie-react-native';
 
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
@@ -258,16 +271,82 @@ export class CustomInput extends React.Component {
                                 onKeyPress={this.handleKeyPress}
                             />
                         </View>
-                    </View>
-                    <View style={{zIndex: -99}}>
-                        {this.state.errorState ?
-                            <Text style={errorStyle}>Invalid Email</Text> : null
-                        }
-                        {
-                            this.state.wrongFormatPhoneNumber ?
-                                <Text style={errorStyle}>Invalid Phone Number Format</Text> : null
-                        }
 
+                        {
+                            Platform.OS === 'web' ?
+                                this.state.errorState ?
+                                    <TouchableWithoutFeedback
+                                        style={{
+                                            flex: 0.14,
+                                            cursor: 'none',
+                                        }}>
+                                        <View style={{
+                                            borderColor: this.state.color,
+                                            borderBottomWidth: this.state.borderBottomWidth,
+                                            height: 30,
+                                            justifyContent: 'center',
+
+                                        }}>
+                                            <Lottie
+                                                options={{
+                                                    loop: false,
+                                                    autoplay: true,
+                                                    // animationData: this.state.errorState ? crossAnimationData : tickAnimationData,
+                                                    animationData: crossAnimationData,
+                                                    rendererSettings: {
+                                                        preserveAspectRatio: 'xMidYMid slice'
+                                                    }
+                                                }}
+                                                height={20}
+                                                // width={this.state.errorState ? 50 : 20}
+                                                width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
+                                                // isStopped={this.state.isStopped}
+                                                // isPaused={this.state.isPaused}
+                                            />
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                    :
+                                    this.state.wrongFormatPhoneNumber ?
+                                        <View style={{
+                                            flex: 0.14,
+                                            justifyContent: 'center',
+                                            borderColor: this.state.color,
+                                            borderBottomWidth: this.state.borderBottomWidth, height: 30
+                                        }}>
+                                            <Lottie
+                                                options={{
+                                                    loop: false,
+                                                    autoplay: true,
+                                                    // animationData: this.state.wrongFormatPhoneNumber ? crossAnimationData : tickAnimationData,
+                                                    animationData: crossAnimationData,
+
+                                                    rendererSettings: {
+                                                        preserveAspectRatio: 'xMidYMid slice'
+                                                    }
+                                                }}
+                                                height={20}
+                                                // width={this.state.errorState ? 50 : 20}
+                                                width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
+                                                // isStopped={this.state.isStopped}
+                                                // isPaused={this.state.isPaused}
+                                            />
+                                        </View>
+                                        : this.renderTicks()
+                                :
+                                <View style={{
+                                    flex: -1,
+                                    justifyContent: 'center',
+                                    borderColor: this.state.color,
+                                    borderBottomWidth: this.state.borderBottomWidth, height: 30
+                                }}>
+                                    <LottieView source={require('../Input/lottieFiles/cross')} autoPlay/>
+                                </View>
+
+                        }
+                        {/*{
+                                this.state.wrongFormatPhoneNumber ?
+                                    <Text style={errorStyle}>Invalid phone number format</Text> : null
+                            }*/}
                     </View>
                 </View>
             </View>
