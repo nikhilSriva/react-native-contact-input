@@ -16,7 +16,7 @@ import CountryTile from "./CountryTile/CountryTile";
 
 const isIE = /*@cc_on!@*/false || !!document.documentMode;
 
-export class FlagSelect extends React.PureComponent {
+export class FlagSelect extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -44,13 +44,6 @@ export class FlagSelect extends React.PureComponent {
                 }
             })
         }
-    }
-
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-        if (nextState.listContainerHeight !== this.state.listContainerHeight)
-            return false
-        else
-            return true
     }
 
     componentDidMount() {
@@ -125,7 +118,6 @@ export class FlagSelect extends React.PureComponent {
 
 
     renderVirtualizedList = (index, cursor) => {
-        console.log("render list")
         return (
             <VirtualizedList
                 data={this.state.data}
@@ -133,7 +125,7 @@ export class FlagSelect extends React.PureComponent {
                     this.VTListRef = ref;
                 }}
                 maxToRenderPerBatch={140}
-                initialNumToRender={50}
+                initialNumToRender={25}
                 removeClippedSubviews={true}
                 // windowSize={100}
                 updateCellsBatchingPeriod={100}

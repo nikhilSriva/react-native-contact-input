@@ -14,16 +14,12 @@ import _ from 'lodash';
 import Lottie from 'react-lottie';
 import * as crossAnimationData from '../Input/lottieFiles/cross'
 import * as tickAnimationData from '../Input/lottieFiles/tick'
-
 import LottieView from 'lottie-react-native';
-
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
-
 export class CustomInput extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -47,6 +43,8 @@ export class CustomInput extends React.Component {
         if (props.disablePhoneNumber === true) {
             this.setState({isEmail: true, isNumber: false, labelTitle: 'Enter the Email'})
         }
+        if (!this.props.disableAnimation)
+            this.animatedValue = new Animated.Value(0)
     }
 
     validationEmail = (value) => {
@@ -82,7 +80,6 @@ export class CustomInput extends React.Component {
             phoneNumber: this.state.value,
             parsedNumber: `+${this.state.dialCode}${this.state.value}`
         }
-        // this._onChange(`+${this.state.dialCode}${this.state.value}`, this.state.isEmail)
         this._onChange(parsedObject, this.state.isEmail)
 
     };
@@ -96,38 +93,72 @@ export class CustomInput extends React.Component {
             if (this.props.disableEmail === true)
                 this.setState({wrongFormatPhoneNumber: true, isNumber: true});
             else {
-                /* if (e.target.value.search('[a-z]') - 1) {
-                     this.setState({charAfterNumberEntered: true})
-                 }*/
-                // if (this.state.isFirstInputNumCheck === 1 && this.state.count !== 1) {
-                //     this.setState({value: e.target.value.substring(this.state.dialCode.toString().length, e.target.value.length)});
-                //     let c = this.state.isFirstInputNumCheck;
-                //     ++c;
-                //     this.setState({isFirstInputNumCheck: c})
-                // } else
-                this.setState({value: e.target.value});
-                this.setState({isEmail: true, isNumber: false, labelTitle: 'Enter the Email',});
+                this.setState({
+                    value: e.target.value
+                })
+                if (!this.props.disableAnimation) {
+                    this.initAnimation(0)
+                    setTimeout(() => {
+                        this.setState({
+                            isEmail: true,
+                            isNumber: false,
+                            labelTitle: 'Enter the Email',
+                        })
+                    }, 120);
+                } else {
+                    this.setState({
+                        isEmail: true,
+                        isNumber: false,
+                        labelTitle: 'Enter the Email',
+                    })
+                }
                 // this.validationEmail(this.state.value);
             }
         } else if (e.target.value === '') {
-            this.setState({
-                labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
-                value: e.target.value,
-                isEmail: this.props.disablePhoneNumber ? true : false,
-                isNumber: this.props.disableEmail ? true : false,
-                count: 1,
-                isFirstInputNumCheck: 1,
-                // dialCode: this.state.dialCode
-                countryCode: this.state.countryCode,
-                // dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)
-                dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
-            });
+            if (!this.props.disableAnimation) {
+                if(!this.props.disableEmail) {
+                    this.initAnimation(0)
+                    setTimeout(() => this.setState({
+                        labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
+                        value: '',
+                        count: 1,
+                        isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : CustomInput.defaultProps.disablePhoneNumber ? true : false,
+                        isNumber: this.props.disableEmail ? this.props.disableEmail : CustomInput.defaultProps.disableEmail ? true : false,
+                        isFirstInputNumCheck: 1,
+                        countryCode: this.state.countryCode,
+                        dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
+                    }), 120)
+                }
+                else{
+                    this.setState({
+                        labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
+                        value: '',
+                        count: 1,
+                        isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : CustomInput.defaultProps.disablePhoneNumber ? true : false,
+                        isNumber: this.props.disableEmail ? this.props.disableEmail : CustomInput.defaultProps.disableEmail ? true : false,
+                        isFirstInputNumCheck: 1,
+                        countryCode: this.state.countryCode,
+                        dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
+                    })
+                }
+            } else {
+                this.setState({
+                    labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
+                    value: '',
+                    count: 1,
+                    isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : CustomInput.defaultProps.disablePhoneNumber ? true : false,
+                    isNumber: this.props.disableEmail ? this.props.disableEmail : CustomInput.defaultProps.disableEmail ? true : false,
+                    isFirstInputNumCheck: 1,
+                    countryCode: this.state.countryCode,
+                    dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
+                })
+            }
+
         } else if (numberRegex.test(e.target.value[0]) === true) {
             if (this.props.disablePhoneNumber === true)
                 this.setState({errorState: true, isEmail: true, value: e.target.value})
             else {
                 this.setState({dialCode: this.state.dialCode});
-                // if (flag === true) {
                 this.setState({
                     value: e.target.value,
                     isEmail: false,
@@ -143,8 +174,8 @@ export class CustomInput extends React.Component {
         if (e.keyCode === 8) {
             this.setState({wrongFormatPhoneNumber: false})
         }
-        if (e.keyCode === 8) {
-            /*if (e.target.value.toString() === this.state.dialCode.toString()) {
+        /*if (e.keyCode === 8) {
+            if (e.target.value.toString() === this.state.dialCode.toString()) {
                 console.log('M')
                 this.setState({
                     value: '',
@@ -155,17 +186,13 @@ export class CustomInput extends React.Component {
                     isNumber: this.props.disableEmail ? true : false,
                     dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.props.defaultCountry)
                 })
-            }*/
-        }
+            }
+        }*/
         if (e.keyCode === 8 && e.target.value.length === 1)
             this.setState({errorState: false})
     };
 
     setDialCode = (dialCode, countryCode) => {
-        /*this.setState({dialCode});
-        this.setState({countryCode});*/
-        // let phoneValue = this.state.value.substring(this.state.dialCode.toString().length, this.state.value.length);
-        // console.log(',,,', phoneValue)
         if (!_.isEmpty(this.state.value))
             this.setState({
                 dialCode,
@@ -175,13 +202,102 @@ export class CustomInput extends React.Component {
             })
 
     };
+    initAnimation = (toValue) => {
+        Animated.spring(this.animatedValue, {
+            toValue: toValue,
+            // velocity:5
+            speed: 15,
+            // duration: 400,
+
+        })
+            .start()
+    }
+
+    renderTicks = () => {
+        if (this.state.isEmail) {
+            if (emailRegex.test(this.state.value) !== true)
+                return <View/>
+            else {
+                return <View style={{
+                    flex: this.state.isEmail ? 0.18 : 0.27,
+                    justifyContent: 'center',
+                    paddingLeft: 0,
+                    borderColor: this.state.color,
+                    borderBottomWidth: this.state.borderBottomWidth, height: 30
+                }}>
+                    <Lottie
+                        options={{
+                            loop: false,
+                            autoplay: true,
+                            animationData: tickAnimationData,
+                            rendererSettings: {
+                                preserveAspectRatio: 'xMidYMid slice'
+                            }
+                        }}
+                        height={20}
+                        // width={this.state.errorState ? 50 : 20}
+                        width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 55}
+                        // isStopped={this.state.isStopped}
+                        // isPaused={this.state.isPaused}
+                    />
+                </View>
+
+            }
+        } else {
+            if (this.state.value !== '' && this.state.value.toString().length !== 1) {
+                if (numberRegex.test(this.state.value) === true) {
+                    const phoneNumber = phoneUtil.parseAndKeepRawInput(this.state.value, this.state.countryCode);
+                    if (phoneUtil.isValidNumber(phoneNumber)) {
+                        return <View style={{
+                            flex: this.state.isEmail ? 0.18 : 0.27,
+                            justifyContent: 'center',
+                            paddingLeft: 0,
+                            borderColor: this.state.color,
+                            borderBottomWidth: this.state.borderBottomWidth, height: 30
+                        }}>
+                            <Lottie
+                                options={{
+                                    loop: false,
+                                    autoplay: true,
+                                    animationData: tickAnimationData,
+                                    rendererSettings: {
+                                        preserveAspectRatio: 'xMidYMid slice'
+                                    }
+                                }}
+                                height={20}
+                                // width={this.state.errorState ? 50 : 20}
+                                width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 55}
+                                // isStopped={this.state.isStopped}
+                                // isPaused={this.state.isPaused}
+                            />
+                        </View>
+                    } else
+                        return <View></View>
+                }
+            }
+        }
+    }
 
     render() {
         const {style, labelStyle, inputFieldStyle} = this.props;
         const errorStyles = StyleSheet.flatten([this.props.labelStyle, styles.errorLabelStyle])
-        const errorStyle = {...errorStyles}
-        const inputWidth = style.width + 48;
-
+        // const errorStyle = {...errorStyles}
+        let animatedValues = {
+            marginLeft: 0.0,
+            opacity: 0.0
+        }
+        if (!this.props.disableAnimation) {
+            animatedValues = {
+                marginLeft: this.animatedValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-8, 0]
+                }),
+                opacity: this.animatedValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, 1]
+                })
+            }
+        }
         return (
             <View style={style}>
                 <View style={{width: '100%'}}>
@@ -190,11 +306,11 @@ export class CustomInput extends React.Component {
                             <View style={{marginVertical: 2}}>
                                 {
                                     this.state.isEmail ?
-                                        <Text style={[labelStyle, {width: inputWidth}]}>
+                                        <Text style={[labelStyle, {width: '100%'}]}>
                                             {this.state.labelTitle}
                                         </Text>
                                         :
-                                        <Text style={[labelStyle, {width: inputWidth}]}>
+                                        <Text style={[labelStyle, {width: '100%'}]}>
                                             {this.state.labelTitle}
                                         </Text>
                                 }
@@ -203,16 +319,22 @@ export class CustomInput extends React.Component {
                     }
 
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
-                        <View style={{
-                            flex: -1,
-                            borderColor: this.state.color,
-                            borderBottomWidth: this.state.borderBottomWidth, height: 30
-                        }}>
-                            {this.state.isEmail ?
-                                null
-                                :
-                                this.state.isNumber ?
+                        {this.state.isEmail ?
+                            null
+                            :
+                            this.state.isNumber ?
+                                <View style={{
+                                    flex: -1,
+                                    borderColor: this.state.color,
+                                    borderBottomWidth: this.state.borderBottomWidth, height: 30,
+                                    // marginLeft: animatedValues.marginLeft,
+                                    // opacity:animatedValues.opacity
+                                }}>
                                     <FlagSelect
+                                        animatedInstance={this.animatedValue}
+                                        initAnimation={this.initAnimation}
+                                        countryMenuWidth={style.width}
+                                        disableAnimation={this.props.disableAnimation}
                                         listItemStyle={this.props.listItemStyle}
                                         inputFieldStyle={this.props.inputFieldStyle}
                                         handleCode={this.setDialCode}
@@ -220,10 +342,10 @@ export class CustomInput extends React.Component {
                                         wrongFormatPhoneNumber={this.state.wrongFormatPhoneNumber}
                                         defaultCountry={this.state.countryCode || this.props.defaultCountry}
                                     />
-                                    :
-                                    null
-                            }
-                        </View>
+                                </View>
+                                :
+                                null
+                        }
                         <View style={{
                             zIndex: -999,
                             flex: 1,
@@ -238,13 +360,7 @@ export class CustomInput extends React.Component {
                                         borderColor: this.state.color,
                                         borderBottomWidth: this.state.borderBottomWidth
                                     },
-                                    this.state.isEmail ?
-                                        {width: inputWidth}
-                                        :
-                                        this.state.isNumber ?
-                                            {width: style.width}
-                                            :
-                                            {width: inputWidth}
+                                    {width: '100%'}
                                 ]}
                                 value={this.state.value}
                                 onFocus={() => this.setState({color: '#0098EF', borderBottomWidth: 2})}
@@ -291,7 +407,6 @@ export class CustomInput extends React.Component {
                                                 options={{
                                                     loop: false,
                                                     autoplay: true,
-                                                    // animationData: this.state.errorState ? crossAnimationData : tickAnimationData,
                                                     animationData: crossAnimationData,
                                                     rendererSettings: {
                                                         preserveAspectRatio: 'xMidYMid slice'
@@ -300,8 +415,6 @@ export class CustomInput extends React.Component {
                                                 height={20}
                                                 // width={this.state.errorState ? 50 : 20}
                                                 width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
-                                                // isStopped={this.state.isStopped}
-                                                // isPaused={this.state.isPaused}
                                             />
                                         </View>
                                     </TouchableWithoutFeedback>
@@ -317,7 +430,6 @@ export class CustomInput extends React.Component {
                                                 options={{
                                                     loop: false,
                                                     autoplay: true,
-                                                    // animationData: this.state.wrongFormatPhoneNumber ? crossAnimationData : tickAnimationData,
                                                     animationData: crossAnimationData,
 
                                                     rendererSettings: {
@@ -327,8 +439,6 @@ export class CustomInput extends React.Component {
                                                 height={20}
                                                 // width={this.state.errorState ? 50 : 20}
                                                 width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
-                                                // isStopped={this.state.isStopped}
-                                                // isPaused={this.state.isPaused}
                                             />
                                         </View>
                                         : this.renderTicks()
@@ -354,26 +464,28 @@ export class CustomInput extends React.Component {
     }
 }
 
-const styles = StyleSheet.create({
-    textInputCommonStyle: {
-        outline: 'none',
-        flex: 1,
-        height: 30,
+const
+    styles = StyleSheet.create({
+        textInputCommonStyle: {
+            outline: 'none',
+            flex: 1,
+            height: 30,
+        },
+        errorLabelStyle: {
+            fontSize: 15,
+            color: 'red',
+            paddingTop: 2,
+            // justifyContent: 'flex-start'
 
-    },
-    errorLabelStyle: {
-        fontSize: 15,
-        color: 'red',
-        paddingTop: 2,
-        // justifyContent: 'flex-start'
-
-    }
-});
+        }
+    });
 
 
-CustomInput.propTypes = {
+CustomInput
+    .propTypes = {
     disableEmail: PropTypes.bool,
     disablePhoneNumber: PropTypes.bool,
+    disableAnimation: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     style: PropTypes.object.isRequired,
     hideLabel: PropTypes.bool,
@@ -383,9 +495,11 @@ CustomInput.propTypes = {
     inputFieldStyle: PropTypes.object,
     defaultCountry: PropTypes.string
 };
-CustomInput.defaultProps = {
+CustomInput
+    .defaultProps = {
     disableEmail: false,
     disablePhoneNumber: false,
+    disableAnimation: false,
     labelTitle: '',
     defaultCountry: '',
     listItemStyle: {height: 60},
