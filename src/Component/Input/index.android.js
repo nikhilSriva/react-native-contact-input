@@ -28,7 +28,7 @@ export class ContactInput extends React.Component {
             wrongFormatPhoneNumber: false,
             countryCode: props.defaultCountry || 'IN',
             isEmail: props.disableEmail ? false : true,
-            dialCode: phoneUtil.getCountryCodeForRegion(props.defaultCountry),
+            dialCode: props.defaultCountry?phoneUtil.getCountryCodeForRegion(props.defaultCountry):'91',
             color: '#DCDCDC',
             borderBottomWidth: 1,
             isNumber: props.disablePhoneNumber ? false : true,
