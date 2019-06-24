@@ -222,10 +222,10 @@ export class FlagSelect extends React.Component {
                                 borderColor: '#ccc',
                                 borderWidth: 1,
                                 borderRadius: 7,
-                                width: this.props.countryMenuWidth,
+                                width: this.props.countryMenuWidth<300?300:this.props.countryMenuWidth,
                                 // top: 19,
                                 left: -44,
-                                marginTop: isIE ? 5 : this.props.wrongFormatPhoneNumber ? 24 : 16,//for chrome
+                                marginTop: isIE ? 5 :10,//for chrome
                                 // marginTop: 5,//for IE
                                 marginBottom: 5,
                                 height: 230,
