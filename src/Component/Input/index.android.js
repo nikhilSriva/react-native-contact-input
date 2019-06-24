@@ -19,7 +19,7 @@ const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
-export class CustomInput extends React.Component {
+export class ContactInput extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -74,7 +74,6 @@ export class CustomInput extends React.Component {
             } else
                 this.setState({wrongFormatPhoneNumber: true});
         }
-
         const parsedObject = {
             dialCode: `+${this.state.dialCode}`,
             phoneNumber: this.state.value,
@@ -122,8 +121,8 @@ export class CustomInput extends React.Component {
                         labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                         value: '',
                         count: 1,
-                        isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : CustomInput.defaultProps.disablePhoneNumber ? true : false,
-                        isNumber: this.props.disableEmail ? this.props.disableEmail : CustomInput.defaultProps.disableEmail ? true : false,
+                        isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : ContactInput.defaultProps.disablePhoneNumber ? true : false,
+                        isNumber: this.props.disableEmail ? this.props.disableEmail : ContactInput.defaultProps.disableEmail ? true : false,
                         isFirstInputNumCheck: 1,
                         countryCode: this.state.countryCode,
                         dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
@@ -134,8 +133,8 @@ export class CustomInput extends React.Component {
                         labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                         value: '',
                         count: 1,
-                        isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : CustomInput.defaultProps.disablePhoneNumber ? true : false,
-                        isNumber: this.props.disableEmail ? this.props.disableEmail : CustomInput.defaultProps.disableEmail ? true : false,
+                        isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : ContactInput.defaultProps.disablePhoneNumber ? true : false,
+                        isNumber: this.props.disableEmail ? this.props.disableEmail : ContactInput.defaultProps.disableEmail ? true : false,
                         isFirstInputNumCheck: 1,
                         countryCode: this.state.countryCode,
                         dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
@@ -146,8 +145,8 @@ export class CustomInput extends React.Component {
                     labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                     value: '',
                     count: 1,
-                    isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : CustomInput.defaultProps.disablePhoneNumber ? true : false,
-                    isNumber: this.props.disableEmail ? this.props.disableEmail : CustomInput.defaultProps.disableEmail ? true : false,
+                    isEmail: this.props.disablePhoneNumber ? this.props.disablePhoneNumber : ContactInput.defaultProps.disablePhoneNumber ? true : false,
+                    isNumber: this.props.disableEmail ? this.props.disableEmail : ContactInput.defaultProps.disableEmail ? true : false,
                     isFirstInputNumCheck: 1,
                     countryCode: this.state.countryCode,
                     dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
@@ -207,6 +206,7 @@ export class CustomInput extends React.Component {
             toValue: toValue,
             // velocity:5
             speed: 15,
+            useNativeDriver:true
             // duration: 400,
 
         })
@@ -481,7 +481,7 @@ const
     });
 
 
-CustomInput
+ContactInput
     .propTypes = {
     disableEmail: PropTypes.bool,
     disablePhoneNumber: PropTypes.bool,
@@ -495,7 +495,7 @@ CustomInput
     inputFieldStyle: PropTypes.object,
     defaultCountry: PropTypes.string
 };
-CustomInput
+ContactInput
     .defaultProps = {
     disableEmail: false,
     disablePhoneNumber: false,
@@ -511,4 +511,4 @@ CustomInput
     }
 }
 
-export default CustomInput;
+export default ContactInput;
