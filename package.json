@@ -1,19 +1,18 @@
 {
-  "name": "dual-input-component",
-  "version": "0.1.0",
-  "description": "single switchable component for email and phone number",
-  "private": true,
+  "name": "react-native-contact-input",
+  "version": "0.1.5",
+  "description": "Single switchable component for email and phone number (web & react-native support)",
+  "author": "Nikhil Srivastava",
+  "private": false,
   "keywords": [
-    "react",
-    "react-native",
     "react-native-web",
+    "react-native",
+    "react",
     "phone number",
-    "flag",
-    "dial code",
+    "country-picker",
     "email",
     "input",
-    "international",
-    "switchable"
+    "international"
   ],
   "scripts": {
     "start": "./node_modules/.bin/react-native start",
@@ -26,20 +25,33 @@
     "test:web-watch": "node scripts/test.js --watch --config \"./config/web.jest.config.js\"",
     "test:web": "node scripts/test.js --config \"./config/web.jest.config.js\"",
     "test:native": "node scripts/test.js --config \"./config/native.jest.config.js\"",
-    "test:native-watch": "node scripts/test.js --watch --config \"./config/native.jest.config.js\"",
+    "test:native-watch": "node scripts/testjs --watch --config \"./config/native.jest.config.js\"",
     "coverage": "node scripts/test.js --coverage --config \"./config/web.jest.config.js\"",
-    "coverage:native": "node scripts/test.js --config \"./config/native.jest.config.js\" --coverage"
+    "coverage:native": "node scripts/test.js --config \"./config/native.jest.config.js\" --coverage",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "main": "dist/",
+  "module": "dist/",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": " https://github.com/nikhilSriva/Dual-input-component-nativeWeb.git"
   },
   "dependencies": {
-    "animated": "^0.2.2",
+    "@babel/runtime": "^7.4.5",
     "google-libphonenumber": "^3.2.2",
     "lodash": "^4.17.11",
+    "lottie-react-native": "^2.6.1",
     "react": "^16.6.x",
     "react-app-polyfill": "^0.1.3",
     "react-art": "^16.6.x",
     "react-dom": "^16.6.x",
+    "react-lottie": "^1.2.3",
     "react-native": "0.55.x",
-    "react-native-vector-icons": "^6.2.0",
     "react-native-web": "^0.9.x"
   },
   "devDependencies": {
@@ -48,11 +60,17 @@
     "@babel/node": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.3.0",
     "@babel/preset-env": "^7.3.1",
+    "@storybook/addon-actions": "^5.1.9",
+    "@storybook/addon-links": "^5.1.9",
+    "@storybook/addon-options": "^5.1.9",
+    "@storybook/addons": "^5.1.9",
+    "@storybook/react": "^5.1.9",
+    "@storybook/react-native": "^5.1.9",
     "@svgr/webpack": "2.4.1",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "9.0.0",
     "babel-jest": "23.6.0",
-    "babel-loader": "8.0.4",
+    "babel-loader": "^8.0.4",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-plugin-named-asset-import": "^0.2.3",
     "babel-preset-react-app": "^6.1.0",
@@ -62,6 +80,8 @@
     "css-loader": "1.0.0",
     "dotenv": "6.0.0",
     "dotenv-expand": "4.2.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "5.6.0",
     "eslint-config-react-app": "^3.0.5",
     "eslint-loader": "2.1.1",
@@ -95,7 +115,7 @@
     "terser-webpack-plugin": "1.1.0",
     "url-loader": "1.1.1",
     "webpack": "4.19.1",
-    "webpack-dev-server": "3.1.9",
+    "webpack-dev-server": "^3.1.11",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "3.6.3"
   },

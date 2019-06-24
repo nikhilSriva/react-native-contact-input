@@ -1,4 +1,4 @@
-#Dual Input Component
+#React-Native-Contact-Input
 Single switchable component for email and phone number (web & react-native support) :globe_with_meridians::iphone:
 
 ![license](https://img.shields.io/github/license/VISI-ONE/create-react-native-web-app.svg)
@@ -9,12 +9,12 @@ Single switchable component for email and phone number (web & react-native suppo
 
 Install the package via ```npm```:
 ```sh
-npm install --save dual-input-component
+npm install --save react-native-contact-input
 ```
 Then use it in your app:
 ```sh
 import React, { Component } from 'react';
-import CustomInput from 'dual-input-component';
+import ContactInput from 'react-native-contact-input';
 
 class App extends Component
 {
@@ -29,7 +29,7 @@ class App extends Component
   render()
   {
     return (
-        <CustomInput
+        <ContactInput
             onChange={(value,state)=>this.handleChange(value)}
             disableEmail={true}
             style={{
