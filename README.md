@@ -1,5 +1,5 @@
-#Dual Input Component
-Single switchable component for email and phone number (web & react-native support) :globe_with_meridians: :iphone:
+#React-Native-Contact-Input
+Single switchable component for email and phone number (web & react-native support) :globe_with_meridians::iphone:
 
 ![license](https://img.shields.io/github/license/VISI-ONE/create-react-native-web-app.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/VISI-ONE/create-react-native-web-app.svg)
@@ -9,12 +9,12 @@ Single switchable component for email and phone number (web & react-native suppo
 
 Install the package via ```npm```:
 ```sh
-npm install --save dual-input-component
+npm install --save react-native-contact-input
 ```
 Then use it in your app:
 ```sh
 import React, { Component } from 'react';
-import CustomInput from 'dual-input-component';
+import ContactInput from 'react-native-contact-input';
 
 class App extends Component
 {
@@ -29,7 +29,7 @@ class App extends Component
   render()
   {
     return (
-        <CustomInput
+        <ContactInput
             onChange={(value,state)=>this.handleChange(value)}
             disableEmail={true}
             style={{
@@ -45,13 +45,13 @@ class App extends Component
 ## Props
 
 
-<table>
+<table width="110%">
   <tr>
-    <td><b>name</b></td>
-    <td><b>type</b></td>
-    <td><b>required</b></td>
-    <td><b>default</b></td>
-    <td><b>description</b></td>
+    <td><b>Name</b></td>
+    <td><b>Type</b></td>
+    <td><b>Required</b></td>
+    <td><b>Default</b></td>
+    <td><b>Description</b></td>
   </tr>
   <tr>
     <td>defaultCountry</td>
@@ -60,7 +60,7 @@ class App extends Component
     <td>'IN'</td>
     <td>sets default country code and flag for the initial render</td>
   </tr>
-  <tr>
+  <tr bgcolor="#f4f4f4">
     <td>disableEmail</td>
     <td>boolean</td>
     <td>no</td>
@@ -76,6 +76,13 @@ class App extends Component
        <td>option whether to disable phone number input or not</td>
      </tr>
      <tr>
+       <td>disableAnimation</td>
+       <td>boolean</td>
+       <td>no</td>
+       <td>false</td>
+       <td>option whether to disable animation while switching between email or phone number (only applicable when <code>disablePhone</code> and <code>disablePhoneNumber</code> is <code>false</code>)</td>
+     </tr>
+     <tr bgcolor="#f4f4f4">
                      <td>hideLabel</td>
                      <td>boolean</td>
                      <td>no</td>
@@ -89,7 +96,7 @@ class App extends Component
          <td>-</td>
          <td>Callback which returns the validated output object</td>
        </tr>
-       <tr>
+       <tr bgcolor="#f4f4f4">
            <td>style</td>
            <td>object</td>
            <td>yes</td>
@@ -108,7 +115,7 @@ class App extends Component
                    <td>' '</td>
                    <td>content of the label to display</td>
                  </tr>
-     <tr>
+     <tr bgcolor="#f4f4f4">
                         <td>labelStyle</td>
                         <td>object</td>
                         <td>no</td>
@@ -122,7 +129,7 @@ class App extends Component
                                 <td>{height:60}</td>
                                 <td>styles which are applied to individual items in list</td>
                               </tr>
-        <tr>
+        <tr bgcolor="#f4f4f4">
                                         <td>inputFieldStyle</td>
                                         <td>object</td>
                                         <td>no</td>
@@ -133,7 +140,4 @@ class App extends Component
 </table>
 
 ##Contributing:
-All your suggestions and PRs and welcome.
-
-####Keywords:
-phone-number flag email international react react-native react-native-web ui
+All your suggestions and PRs are welcome.
