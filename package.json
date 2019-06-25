@@ -29,7 +29,7 @@
     "coverage": "node scripts/test.js --coverage --config \"./config/web.jest.config.js\"",
     "coverage:native": "node scripts/test.js --config \"./config/native.jest.config.js\" --coverage",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook -s public"
   },
   "main": "dist/",
   "module": "dist/",
