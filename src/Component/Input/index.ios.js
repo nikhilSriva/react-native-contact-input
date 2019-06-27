@@ -55,27 +55,29 @@ export class ContactInput extends React.Component {
             let emailError;
             this.setState({
                 errorState: false,
-            });
+            }, () => this.setState({defaultBottomWidth: 1}));
             if (this.state.email !== '') {
                 emailError = false
-                this.setState({errorState: false})
+                this.setState({errorState: false}, () => this.setState({defaultBottomWidth: 1}))
             }
             if (emailRegex.test(this.state.email) !== true) {
                 emailError = true
-                this.setState({errorState: true});
+                this.setState({errorState: true}, () => this.setState({
+                    defaultBottomWidth: 0
+                }));
                 this.initShakeOnInvalid(1)
 
             } else {
                 this.initBorderExpand(0)
                 emailError = false
-                this.setState({errorState: false});
+                this.setState({errorState: false}, () => this.setState({defaultBottomWidth: 1}));
             }
             if (this.state.email === "") {
                 this.initBorderExpand(0)
                 emailError = false
                 this.setState({
                     errorState: false,
-                });
+                }, () => this.setState({defaultBottomWidth: 1}));
             }
             const parsedObject = {
                 email: this.state.value,
@@ -92,14 +94,19 @@ export class ContactInput extends React.Component {
             if (phoneUtil.isValidNumber(phoneNumber)) {
                 this.initBorderExpand(0)
                 phoneError = false
-                this.setState({wrongFormatPhoneNumber: false});
+                this.setState({wrongFormatPhoneNumber: false}, () => {
+                    this.setState({defaultBottomWidth: 1})
+                });
             } else {
                 phoneError = true
-                this.setState({wrongFormatPhoneNumber: true});
+                this.setState({wrongFormatPhoneNumber: true}, () => {
+                    this.setState({
+                        defaultBottomWidth: 0
+                    })
+                });
                 this.initShakeOnInvalid(1)
 
             }
-
             const parsedObject = {
                 dialCode: `+${this.state.dialCode}`,
                 phoneNumber: this.state.value,
@@ -503,25 +510,14 @@ export class ContactInput extends React.Component {
                                     } :
                                     this.state.isEmail ?
                                         () => {
-                                            if (this.state.wrongFormatPhoneNumber === true || this.state.errorState === true) {
-                                                this.setState({
-                                                    defaultBottomWidth: 0
-                                                })
-                                            }
-                                            else{
-                                                this.setState({defaultBottomWidth:1})
-                                            }
                                             this.setState({
                                                     color: '#DCDCDC',
                                                     borderBottomWidth: 1,
                                                 },
                                                 this.validationEmail(this.state.value))
                                         } : () => {
-                                            if (this.state.wrongFormatPhoneNumber === true || this.state.errorState === true) {
-                                                this.setState({
-                                                    defaultBottomWidth: 0
-                                                })
-                                            }
+
+
                                             this.setState({
                                                     color: '#DCDCDC',
                                                     borderBottomWidth: 1,
