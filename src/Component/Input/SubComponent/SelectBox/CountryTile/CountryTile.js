@@ -10,9 +10,8 @@ export function CountryTile(props)  {
                     paddingHorizontal: 7,
                     paddingVertical: 2
                 }}>
-                   <Image
-                       source={{uri:props.item.flag}}
-                           style={{width: 20, height: 20}}/>
+                    <Image source={{uri: props.item.url + props.item.code.toLowerCase() + '.svg'}}
+                           style={{width: 25, height: 25}}/>
                     <Text style={{fontFamily: 'Nunito', paddingHorizontal: 10}}>{props.item.name}</Text>
                 </View>
             </TouchableWithoutFeedback>
