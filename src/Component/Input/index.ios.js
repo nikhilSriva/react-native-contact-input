@@ -358,8 +358,16 @@ export class ContactInput extends React.Component {
                 this.initOnValidAnimation(0)
         }
 
-
+        let modifiedStyle={};
         const {style, labelStyle, inputFieldStyle} = this.props;
+        if(style.width<300)
+        {
+            const fallbackStyle=StyleSheet.flatten([style,{width:300}])
+            modifiedStyle={...fallbackStyle}
+        }
+        else{
+            modifiedStyle=style
+        }
         // const errorStyles = StyleSheet.flatten([this.props.labelStyle, styles.errorLabelStyle])
         // const errorStyle = {...errorStyles}
         let animatedValues = {
@@ -389,7 +397,7 @@ export class ContactInput extends React.Component {
             }
         }
         return (
-            <View style={style}>
+            <View style={modifiedStyle}>
                 <View style={{width: '100%'}}>
                     {
                         !this.props.hideLabel ?
