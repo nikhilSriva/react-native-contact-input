@@ -6,19 +6,16 @@ import {
     StyleSheet,
     Animated,
     Platform,
-    TouchableWithoutFeedback
+    Easing
 } from 'react-native'
 import FlagSelect from './SubComponent/SelectBox/FlagSelect'
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Lottie from 'react-lottie';
-import * as crossAnimationData from '../Input/lottieFiles/cross'
-import * as tickAnimationData from '../Input/lottieFiles/tick'
-import LottieView from 'lottie-react-native';
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+
 export class ContactInput extends React.Component {
     constructor(props) {
         super(props);
@@ -485,7 +482,7 @@ ContactInput
     .propTypes = {
     disableEmail: PropTypes.bool,
     disablePhoneNumber: PropTypes.bool,
-    disableAnimation: PropTypes.bool,
+    disableAnimation:PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     style: PropTypes.object.isRequired,
     hideLabel: PropTypes.bool,
@@ -499,7 +496,7 @@ ContactInput
     .defaultProps = {
     disableEmail: false,
     disablePhoneNumber: false,
-    disableAnimation: false,
+    disableAnimation:false,
     labelTitle: '',
     defaultCountry: '',
     listItemStyle: {height: 60},

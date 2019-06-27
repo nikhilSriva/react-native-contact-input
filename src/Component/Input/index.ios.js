@@ -6,19 +6,16 @@ import {
     StyleSheet,
     Animated,
     Platform,
-    TouchableWithoutFeedback
+    Easing
 } from 'react-native'
 import FlagSelect from './SubComponent/SelectBox/FlagSelect'
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Lottie from 'react-lottie';
-import * as crossAnimationData from '../Input/lottieFiles/cross'
-import * as tickAnimationData from '../Input/lottieFiles/tick'
-import LottieView from 'lottie-react-native';
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
+
 export class ContactInput extends React.Component {
     constructor(props) {
         super(props);
@@ -28,7 +25,7 @@ export class ContactInput extends React.Component {
             wrongFormatPhoneNumber: false,
             countryCode: props.defaultCountry || 'IN',
             isEmail: props.disableEmail ? false : true,
-            dialCode: props.defaultCountry?phoneUtil.getCountryCodeForRegion(props.defaultCountry):'91',
+            dialCode: props.defaultCountry ? phoneUtil.getCountryCodeForRegion(props.defaultCountry) : '91',
             color: '#DCDCDC',
             borderBottomWidth: 1,
             isNumber: props.disablePhoneNumber ? false : true,
@@ -45,42 +42,69 @@ export class ContactInput extends React.Component {
         }
         if (!this.props.disableAnimation)
             this.animatedValue = new Animated.Value(0)
+        this.animatedColorErrorValue = new Animated.Value(0)
+        this.animatedErrorValue = new Animated.Value(0)
+
     }
 
     validationEmail = (value) => {
         this.setState({email: value}, () => {
+            let emailError;
             this.setState({
                 errorState: false,
             });
             if (this.state.email !== '')
+            {
+                emailError=false
                 this.setState({errorState: false})
+            }
             if (emailRegex.test(this.state.email) !== true)
+            {
+                emailError=true
                 this.setState({errorState: true});
-            else
+                this.initShakeOnInvalid(1)
+
+            } else {
+                emailError=false
                 this.setState({errorState: false});
+            }
             if (this.state.email === "")
+            {
+                emailError=false
                 this.setState({
                     errorState: false,
                 });
-            this._onChange(this.state.value, this.state.isEmail)
+            }
+            const parsedObject = {
+                email: this.state.value,
+                isValid: !emailError
+            }
+            this._onChange(parsedObject, this.state.isEmail)
         })
     };
 
     handlePhoneNumberValidation = (number) => {
         if (number !== '' && number.toString().length !== 1) {
+            let phoneError = false
             const phoneNumber = phoneUtil.parseAndKeepRawInput(number, this.state.countryCode);
             if (phoneUtil.isValidNumber(phoneNumber)) {
+                phoneError = false
                 this.setState({wrongFormatPhoneNumber: false});
-            } else
+            } else {
+                phoneError = true
                 this.setState({wrongFormatPhoneNumber: true});
-        }
-        const parsedObject = {
-            dialCode: `+${this.state.dialCode}`,
-            phoneNumber: this.state.value,
-            parsedNumber: `+${this.state.dialCode}${this.state.value}`
-        }
-        this._onChange(parsedObject, this.state.isEmail)
+                this.initShakeOnInvalid(1)
 
+            }
+
+            const parsedObject = {
+                dialCode: `+${this.state.dialCode}`,
+                phoneNumber: this.state.value,
+                parsedNumber: `+${this.state.dialCode}${this.state.value}`,
+                isValid: !phoneError
+            }
+            this._onChange(parsedObject, this.state.isEmail)
+        }
     };
 
     _onChange = (value, isEmail) => {
@@ -485,7 +509,7 @@ ContactInput
     .propTypes = {
     disableEmail: PropTypes.bool,
     disablePhoneNumber: PropTypes.bool,
-    disableAnimation: PropTypes.bool,
+    disableAnimation:PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     style: PropTypes.object.isRequired,
     hideLabel: PropTypes.bool,
@@ -499,7 +523,7 @@ ContactInput
     .defaultProps = {
     disableEmail: false,
     disablePhoneNumber: false,
-    disableAnimation: false,
+    disableAnimation:false,
     labelTitle: '',
     defaultCountry: '',
     listItemStyle: {height: 60},
