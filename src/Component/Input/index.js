@@ -117,7 +117,8 @@ export class ContactInput extends React.Component {
                 this.setState({wrongFormatPhoneNumber: true, isNumber: true});
             else {
                 this.setState({
-                    value: e.target.value
+                    value: e.target.value,
+                    errorState: false
                 })
                 if (!this.props.disableAnimation) {
                     this.initAnimation(0)
@@ -139,7 +140,7 @@ export class ContactInput extends React.Component {
             }
         } else if (e.target.value === '') {
             if (!this.props.disableAnimation) {
-                if(!this.props.disableEmail) {
+                if (!this.props.disableEmail) {
                     this.initAnimation(0)
                     setTimeout(() => this.setState({
                         labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
@@ -151,8 +152,7 @@ export class ContactInput extends React.Component {
                         countryCode: this.state.countryCode,
                         dialCode: this.props.disableEmail ? this.state.dialCode : phoneUtil.getCountryCodeForRegion(this.state.countryCode)
                     }), 120)
-                }
-                else{
+                } else {
                     this.setState({
                         labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                         value: '',
@@ -181,9 +181,11 @@ export class ContactInput extends React.Component {
             if (this.props.disablePhoneNumber === true)
                 this.setState({errorState: true, isEmail: true, value: e.target.value})
             else {
+
                 this.setState({dialCode: this.state.dialCode});
                 this.setState({
                     value: e.target.value,
+                    wrongFormatPhoneNumber:false,
                     isEmail: false,
                     isNumber: true,
                     labelTitle: 'Enter the Phone Number',
@@ -230,56 +232,62 @@ export class ContactInput extends React.Component {
             toValue: toValue,
             // velocity:5
             speed: 15,
-            useNativeDriver:true
+            useNativeDriver: true
             // duration: 400,
 
         })
             .start()
     }
+    initOnValidAnimation = (toValue) => {
+        Animated.timing(this.animatedColorErrorValue, {
+            toValue: toValue,
+            // velocity:5
+            useNativeDriver: true,
+            duration: 200
+        })
+            .start()
+    }
 
-    renderTicks = () => {
+    /*handleOnValidAnimations = () => {
         if (this.state.isEmail) {
             if (emailRegex.test(this.state.value) !== true)
-                return <View/>
+                return
             else {
-                return <View style={{
-                    flex: this.state.isEmail ? 0.18 : 0.27,
-                    justifyContent: 'center',
-                    paddingLeft: 0,
-                    borderColor: this.state.color,
-                    borderBottomWidth: this.state.borderBottomWidth, height: 30
-                }}>
-                    <Lottie
-                        options={{
-                            loop: false,
-                            autoplay: true,
-                            animationData: tickAnimationData,
-                            rendererSettings: {
-                                preserveAspectRatio: 'xMidYMid slice'
-                            }
-                        }}
-                        height={20}
-                        // width={this.state.errorState ? 50 : 20}
-                        width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 55}
-                        // isStopped={this.state.isStopped}
-                        // isPaused={this.state.isPaused}
-                    />
-                </View>
-
+                this.initOnValidAnimation(0)
+                // return <View style={{
+                //     borderColor: this.state.color,
+                //     height: 30,
+                //     justifyContent: 'center',
+                //     width: 20,
+                //     borderBottomWidth: this.state.borderBottomWidth
+                // }}>
+                //     {/!*<AnimatedTick/>*!/}
+                //     {/!*<Lottie
+                //         options={{
+                //             loop: false,
+                //             autoplay: true,
+                //             animationData: tickAnimationData,
+                //             rendererSettings: {
+                //                 preserveAspectRatio: 'xMidYMid slice'
+                //             }
+                //         }}
+                //         height={20}
+                //         // width={this.state.errorState ? 50 : 20}
+                //         width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 55}
+                //         // isStopped={this.state.isStopped}
+                //         // isPaused={this.state.isPaused}
+                //     />*!/}
+                // </View>
             }
         } else {
             if (this.state.value !== '' && this.state.value.toString().length !== 1) {
                 if (numberRegex.test(this.state.value) === true) {
                     const phoneNumber = phoneUtil.parseAndKeepRawInput(this.state.value, this.state.countryCode);
                     if (phoneUtil.isValidNumber(phoneNumber)) {
-                        return <View style={{
-                            flex: this.state.isEmail ? 0.18 : 0.27,
-                            justifyContent: 'center',
-                            paddingLeft: 0,
-                            borderColor: this.state.color,
-                            borderBottomWidth: this.state.borderBottomWidth, height: 30
-                        }}>
-                            <Lottie
+                        this.initOnValidAnimation(0)
+                        {/!**!/
+                        }
+                        {/!*<Lottie
                                 options={{
                                     loop: false,
                                     autoplay: true,
@@ -293,23 +301,81 @@ export class ContactInput extends React.Component {
                                 width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 55}
                                 // isStopped={this.state.isStopped}
                                 // isPaused={this.state.isPaused}
-                            />
-                        </View>
+                            />*!/
+                        }
+
                     } else
-                        return <View></View>
+                        return
                 }
             }
         }
+    }*/
+
+    initShakeOnInvalid = (toValue) => {
+        Animated.sequence([
+            Animated.timing(this.animatedColorErrorValue, {
+                toValue: toValue,
+                // velocity:5
+                useNativeDriver: true,
+                duration: 200
+            }),
+            Animated.timing(this.animatedErrorValue, {
+                toValue: 1,
+                duration: 50,
+                easing: Easing.linear,
+                useNativeDriver: true
+            }),
+            // return to begin position
+            Animated.timing(this.animatedErrorValue, {
+                toValue: 0,
+                duration: 50,
+                easing: Easing.linear,
+                useNativeDriver: true
+            }),
+            Animated.timing(this.animatedErrorValue, {
+                toValue: 1,
+                duration: 50,
+                easing: Easing.linear,
+                useNativeDriver: true
+            }),
+            // return to begin position
+            Animated.timing(this.animatedErrorValue, {
+                toValue: 0,
+                duration: 50,
+                easing: Easing.linear,
+                useNativeDriver: true
+            })
+        ])
+            .start()
     }
 
     render() {
+        if (this.state.isEmail) {
+            if (!this.state.errorState)
+                this.initOnValidAnimation(0)
+        } else {
+            if (!this.state.wrongFormatPhoneNumber)
+                this.initOnValidAnimation(0)
+        }
+
+
         const {style, labelStyle, inputFieldStyle} = this.props;
-        const errorStyles = StyleSheet.flatten([this.props.labelStyle, styles.errorLabelStyle])
+        // const errorStyles = StyleSheet.flatten([this.props.labelStyle, styles.errorLabelStyle])
         // const errorStyle = {...errorStyles}
         let animatedValues = {
             marginLeft: 0.0,
             opacity: 0.0
         }
+
+        const color = this.animatedColorErrorValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: ['#0098EF', '#E84242']
+        })
+
+        const translateX = this.animatedErrorValue.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 5]
+        })
         if (!this.props.disableAnimation) {
             animatedValues = {
                 marginLeft: this.animatedValue.interpolate({
@@ -327,7 +393,13 @@ export class ContactInput extends React.Component {
                 <View style={{width: '100%'}}>
                     {
                         !this.props.hideLabel ?
-                            <View style={{marginVertical: 2}}>
+                            <Animated.View style={{
+                                marginVertical: 2, transform: [
+                                    {
+                                        translateX: translateX,
+                                    }
+                                ]
+                            }}>
                                 {
                                     this.state.isEmail ?
                                         <Text style={[labelStyle, {width: '100%'}]}>
@@ -338,7 +410,7 @@ export class ContactInput extends React.Component {
                                             {this.state.labelTitle}
                                         </Text>
                                 }
-                            </View> :
+                            </Animated.View> :
                             null
                     }
 
@@ -347,12 +419,15 @@ export class ContactInput extends React.Component {
                             null
                             :
                             this.state.isNumber ?
-                                <View style={{
+                                <Animated.View style={{
                                     flex: -1,
-                                    borderColor: this.state.color,
+                                    borderColor: color,
                                     borderBottomWidth: this.state.borderBottomWidth, height: 30,
-                                    // marginLeft: animatedValues.marginLeft,
-                                    // opacity:animatedValues.opacity
+                                    transform: [
+                                        {
+                                            translateX: translateX
+                                        }
+                                    ]
                                 }}>
                                     <FlagSelect
                                         animatedInstance={this.animatedValue}
@@ -366,14 +441,20 @@ export class ContactInput extends React.Component {
                                         wrongFormatPhoneNumber={this.state.wrongFormatPhoneNumber}
                                         defaultCountry={this.state.countryCode || this.props.defaultCountry}
                                     />
-                                </View>
+                                </Animated.View>
                                 :
                                 null
                         }
-                        <View style={{
+                        <Animated.View style={{
                             zIndex: -999,
                             flex: 1,
-                            borderColor: this.state.color,
+                            borderColor: color,
+                            transform: [
+                                {
+                                    translateX: translateX
+                                }
+                            ],
+                            borderBottomWidth: this.state.borderBottomWidth,
                             height: 30
                         }}>
                             <TextInput
@@ -381,8 +462,9 @@ export class ContactInput extends React.Component {
                                 autoCorrect={false}
                                 style={[inputFieldStyle, styles.textInputCommonStyle,
                                     {
-                                        borderColor: this.state.color,
-                                        borderBottomWidth: this.state.borderBottomWidth
+                                        // borderColor: color,
+                                        // borderBottomWidth: this.state.borderBottomWidth,
+
                                     },
                                     {width: '100%'}
                                 ]}
@@ -399,89 +481,115 @@ export class ContactInput extends React.Component {
                                             this.setState({
                                                 color: '#DCDCDC',
                                                 borderBottomWidth: 1
-                                            }, this.validationEmail(this.state.value))
+                                            },
+                                            this.validationEmail(this.state.value))
                                         } : () => {
                                             this.setState({
                                                 color: '#DCDCDC',
                                                 borderBottomWidth: 1
-                                            }, this.handlePhoneNumberValidation(this.state.value))
+                                            },
+                                            this.handlePhoneNumberValidation(this.state.value))
                                         }}
                                 placeholder={this.props.disableEmail === false && this.props.disablePhoneNumber === false ? 'Email or Phone Number' : this.props.disableEmail ? "Phone Number" : "Email"}
                                 onChange={(e) => this.inputValidation(e)}
                                 onKeyPress={this.handleKeyPress}
                             />
-                        </View>
+                        </Animated.View>
+                        {/*{
+                            this.state.errorState ?
+                                <Text>a</Text> :
+                                this.state.wrongFormatPhoneNumber ?
+                                    this.handleOnValidAnimations(0)
+                                    : null
 
-                        {
-                            Platform.OS === 'web' ?
-                                this.state.errorState ?
-                                    <TouchableWithoutFeedback
-                                        style={{
-                                            flex: 0.14,
-                                            cursor: 'none',
-                                        }}>
-                                        <View style={{
-                                            borderColor: this.state.color,
-                                            borderBottomWidth: this.state.borderBottomWidth,
-                                            height: 30,
-                                            justifyContent: 'center',
+                        }
+*/}
+                        {/*{
+                        //////animationsHandlingErrorModule
+                            !this.props.disableFeedbackAnimations ?
+                                (Platform.OS === 'web' ?
+                                        this.state.errorState ?
+                                            <TouchableWithoutFeedback
+                                                style={{
+                                                    flex: 0.14,
+                                                    cursor: 'none',
+                                                }}>
+                                                <View style={{
+                                                    borderColor: this.state.color,
+                                                    borderBottomWidth: this.state.borderBottomWidth,
+                                                    height: 30,
+                                                    justifyContent: 'center',
+                                                    cursor: 'none',
+                                                }}>
+                                                    <Lottie
+                                                        options={{
+                                                            loop: false,
+                                                            autoplay: true,
+                                                            animationData: crossAnimationData,
+                                                            rendererSettings: {
+                                                                preserveAspectRatio: 'xMidYMid slice'
+                                                            }
+                                                        }}
+                                                        height={20}
+                                                        // width={this.state.errorState ? 50 : 20}
+                                                        width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
+                                                    />
+                                                </View>
+                                            </TouchableWithoutFeedback>
+                                            :
+                                            this.state.wrongFormatPhoneNumber ?
+                                                <View style={{
+                                                    flex: 0.14,
+                                                    justifyContent: 'center',
+                                                    borderColor: this.state.color,
+                                                    cursor: 'none',
+                                                    borderBottomWidth: this.state.borderBottomWidth, height: 30
+                                                }}>
+                                                    <Lottie
+                                                        options={{
+                                                            loop: false,
+                                                            autoplay: true,
+                                                            animationData: crossAnimationData,
 
-                                        }}>
-                                            <Lottie
-                                                options={{
-                                                    loop: false,
-                                                    autoplay: true,
-                                                    animationData: crossAnimationData,
-                                                    rendererSettings: {
-                                                        preserveAspectRatio: 'xMidYMid slice'
-                                                    }
-                                                }}
-                                                height={20}
-                                                // width={this.state.errorState ? 50 : 20}
-                                                width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
-                                            />
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                                    :
-                                    this.state.wrongFormatPhoneNumber ?
+                                                            rendererSettings: {
+                                                                preserveAspectRatio: 'xMidYMid slice'
+                                                            }
+                                                        }}
+                                                        height={20}
+                                                        // width={this.state.errorState ? 50 : 20}
+                                                        width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
+                                                    />
+                                                </View>
+                                                : this.renderTicks()
+                                        :
                                         <View style={{
-                                            flex: 0.14,
+                                            flex: -1,
                                             justifyContent: 'center',
                                             borderColor: this.state.color,
                                             borderBottomWidth: this.state.borderBottomWidth, height: 30
                                         }}>
-                                            <Lottie
-                                                options={{
-                                                    loop: false,
-                                                    autoplay: true,
-                                                    animationData: crossAnimationData,
-
-                                                    rendererSettings: {
-                                                        preserveAspectRatio: 'xMidYMid slice'
-                                                    }
-                                                }}
-                                                height={20}
-                                                // width={this.state.errorState ? 50 : 20}
-                                                width={this.state.errorState || this.state.wrongFormatPhoneNumber ? 20 : 50}
-                                            />
+                                            <LottieView source={require('./lottieFiles/cross')} autoPlay/>
                                         </View>
-                                        : this.renderTicks()
+                                )
                                 :
-                                <View style={{
-                                    flex: -1,
-                                    justifyContent: 'center',
-                                    borderColor: this.state.color,
-                                    borderBottomWidth: this.state.borderBottomWidth, height: 30
-                                }}>
-                                    <LottieView source={require('../Input/lottieFiles/cross')} autoPlay/>
-                                </View>
-
-                        }
-                        {/*{
-                                this.state.wrongFormatPhoneNumber ?
-                                    <Text style={errorStyle}>Invalid phone number format</Text> : null
-                            }*/}
+                                null
+                        }*/}
                     </View>
+                    { /*
+                        //////textErrorHandlingModule
+                    {
+                        this.props.disableLottieAnimations ?
+                            <View style={{zIndex: -99}}>
+                                {this.state.errorState ?
+                                    <Text style={errorStyle}>Invalid Email</Text> : null
+                                }
+                                {
+                                    this.state.wrongFormatPhoneNumber ?
+                                        <Text style={errorStyle}>Invalid Phone Number Format</Text> : null
+                                }
+
+                            </View> : null
+                    }*/}
                 </View>
             </View>
         )
