@@ -6,11 +6,13 @@ import {
     StyleSheet,
     Animated,
     Platform,
-    Easing
+    Easing,
+    TouchableOpacity
 } from 'react-native'
 import FlagSelect from './SubComponent/SelectBox/FlagSelect'
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+
 const alphabetRegex = new RegExp('[a-zA-Z]+')
 const numberRegex = new RegExp('[0-9]+$');
 const emailRegex = new RegExp('^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
@@ -28,6 +30,7 @@ export class ContactInput extends React.Component {
             dialCode: props.defaultCountry ? phoneUtil.getCountryCodeForRegion(props.defaultCountry) : '91',
             color: '#DCDCDC',
             borderBottomWidth: 1,
+            defaultBottomWidth: 1,
             isNumber: props.disablePhoneNumber ? false : true,
             labelTitle: props.disablePhoneNumber === false && props.disableEmail === false ? 'Enter Email or Phone Number' : props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
             errorState: false,
@@ -44,7 +47,7 @@ export class ContactInput extends React.Component {
             this.animatedValue = new Animated.Value(0)
         this.animatedColorErrorValue = new Animated.Value(0)
         this.animatedErrorValue = new Animated.Value(0)
-
+        this.animatedBorder = new Animated.Value(0)
     }
 
     validationEmail = (value) => {
@@ -53,24 +56,23 @@ export class ContactInput extends React.Component {
             this.setState({
                 errorState: false,
             });
-            if (this.state.email !== '')
-            {
-                emailError=false
+            if (this.state.email !== '') {
+                emailError = false
                 this.setState({errorState: false})
             }
-            if (emailRegex.test(this.state.email) !== true)
-            {
-                emailError=true
+            if (emailRegex.test(this.state.email) !== true) {
+                emailError = true
                 this.setState({errorState: true});
                 this.initShakeOnInvalid(1)
 
             } else {
-                emailError=false
+                this.initBorderExpand(0)
+                emailError = false
                 this.setState({errorState: false});
             }
-            if (this.state.email === "")
-            {
-                emailError=false
+            if (this.state.email === "") {
+                this.initBorderExpand(0)
+                emailError = false
                 this.setState({
                     errorState: false,
                 });
@@ -88,6 +90,7 @@ export class ContactInput extends React.Component {
             let phoneError = false
             const phoneNumber = phoneUtil.parseAndKeepRawInput(number, this.state.countryCode);
             if (phoneUtil.isValidNumber(phoneNumber)) {
+                this.initBorderExpand(0)
                 phoneError = false
                 this.setState({wrongFormatPhoneNumber: false});
             } else {
@@ -185,7 +188,7 @@ export class ContactInput extends React.Component {
                 this.setState({dialCode: this.state.dialCode});
                 this.setState({
                     value: e.target.value,
-                    wrongFormatPhoneNumber:false,
+                    wrongFormatPhoneNumber: false,
                     isEmail: false,
                     isNumber: true,
                     labelTitle: 'Enter the Phone Number',
@@ -348,6 +351,16 @@ export class ContactInput extends React.Component {
         ])
             .start()
     }
+    initBorderExpand = (toValue) => {
+        Animated.timing(this.animatedBorder, {
+            toValue: toValue,
+            duration: 300,
+        })
+            .start()
+    }
+    clearText = () => {
+        console.log(this._textInput.isFocused())
+    }
 
     render() {
         if (this.state.isEmail) {
@@ -358,15 +371,14 @@ export class ContactInput extends React.Component {
                 this.initOnValidAnimation(0)
         }
 
-        let modifiedStyle={};
+
+        let modifiedStyle = {};
         const {style, labelStyle, inputFieldStyle} = this.props;
-        if(style.width<300)
-        {
-            const fallbackStyle=StyleSheet.flatten([style,{width:300}])
-            modifiedStyle={...fallbackStyle}
-        }
-        else{
-            modifiedStyle=style
+        if (style.width < 300) {
+            const fallbackStyle = StyleSheet.flatten([style, {width: 300}])
+            modifiedStyle = {...fallbackStyle}
+        } else {
+            modifiedStyle = style
         }
         // const errorStyles = StyleSheet.flatten([this.props.labelStyle, styles.errorLabelStyle])
         // const errorStyle = {...errorStyles}
@@ -374,7 +386,10 @@ export class ContactInput extends React.Component {
             marginLeft: 0.0,
             opacity: 0.0
         }
-
+        const scaleX = this.animatedBorder.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.0, 1]
+        })
         const color = this.animatedColorErrorValue.interpolate({
             inputRange: [0, 1],
             outputRange: ['#0098EF', '#E84242']
@@ -382,7 +397,7 @@ export class ContactInput extends React.Component {
 
         const translateX = this.animatedErrorValue.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 5]
+            outputRange: [0, 6]
         })
         if (!this.props.disableAnimation) {
             animatedValues = {
@@ -427,15 +442,12 @@ export class ContactInput extends React.Component {
                             null
                             :
                             this.state.isNumber ?
-                                <Animated.View style={{
+                                <View style={{
                                     flex: -1,
-                                    borderColor: color,
-                                    borderBottomWidth: this.state.borderBottomWidth, height: 30,
-                                    transform: [
-                                        {
-                                            translateX: translateX
-                                        }
-                                    ]
+                                    borderColor: '#dcdcdc',
+                                    // borderBottomWidth:this.state.wrongFormatPhoneNumber===true||this.state.errorState===true?0:1,
+                                    borderBottomWidth: this.state.defaultBottomWidth,
+                                    height: 30,
                                 }}>
                                     <FlagSelect
                                         animatedInstance={this.animatedValue}
@@ -449,25 +461,21 @@ export class ContactInput extends React.Component {
                                         wrongFormatPhoneNumber={this.state.wrongFormatPhoneNumber}
                                         defaultCountry={this.state.countryCode || this.props.defaultCountry}
                                     />
-                                </Animated.View>
+                                </View>
                                 :
                                 null
                         }
-                        <Animated.View style={{
+                        <View style={{
                             zIndex: -999,
                             flex: 1,
-                            borderColor: color,
-                            transform: [
-                                {
-                                    translateX: translateX
-                                }
-                            ],
-                            borderBottomWidth: this.state.borderBottomWidth,
+                            borderColor: '#dcdcdc',
+                            borderBottomWidth: this.state.defaultBottomWidth,
                             height: 30
                         }}>
                             <TextInput
                                 type={this.state.isEmail ? 'text' : 'number'}
                                 autoCorrect={false}
+                                ref={component => this._textInput = component}
                                 style={[inputFieldStyle, styles.textInputCommonStyle,
                                     {
                                         // borderColor: color,
@@ -477,32 +485,54 @@ export class ContactInput extends React.Component {
                                     {width: '100%'}
                                 ]}
                                 value={this.state.value}
-                                onFocus={() => this.setState({color: '#0098EF', borderBottomWidth: 2})}
+                                onFocus={() => this.setState({
+                                    color: '#0098EF',
+                                    borderBottomWidth: 2,
+                                    defaultBottomWidth: 0
+                                }, () => {
+                                    this.initBorderExpand(1)
+                                })}
                                 onBlur={this.state.isEmail === false && this.state.isNumber === false ? () => {
                                         this.setState({
                                             color: '#DCDCDC',
-                                            borderBottomWidth: 1
+                                            borderBottomWidth: 1,
+                                            defaultBottomWidth: 1
+                                        }, () => {
+                                            this.initBorderExpand(0)
                                         })
                                     } :
                                     this.state.isEmail ?
                                         () => {
+                                            if (this.state.wrongFormatPhoneNumber === true || this.state.errorState === true) {
+                                                this.setState({
+                                                    defaultBottomWidth: 0
+                                                })
+                                            }
+                                            else{
+                                                this.setState({defaultBottomWidth:1})
+                                            }
                                             this.setState({
-                                                color: '#DCDCDC',
-                                                borderBottomWidth: 1
-                                            },
-                                            this.validationEmail(this.state.value))
+                                                    color: '#DCDCDC',
+                                                    borderBottomWidth: 1,
+                                                },
+                                                this.validationEmail(this.state.value))
                                         } : () => {
+                                            if (this.state.wrongFormatPhoneNumber === true || this.state.errorState === true) {
+                                                this.setState({
+                                                    defaultBottomWidth: 0
+                                                })
+                                            }
                                             this.setState({
-                                                color: '#DCDCDC',
-                                                borderBottomWidth: 1
-                                            },
-                                            this.handlePhoneNumberValidation(this.state.value))
+                                                    color: '#DCDCDC',
+                                                    borderBottomWidth: 1,
+                                                },
+                                                this.handlePhoneNumberValidation(this.state.value))
                                         }}
                                 placeholder={this.props.disableEmail === false && this.props.disablePhoneNumber === false ? 'Email or Phone Number' : this.props.disableEmail ? "Phone Number" : "Email"}
                                 onChange={(e) => this.inputValidation(e)}
                                 onKeyPress={this.handleKeyPress}
                             />
-                        </Animated.View>
+                        </View>
                         {/*{
                             this.state.errorState ?
                                 <Text>a</Text> :
@@ -583,6 +613,25 @@ export class ContactInput extends React.Component {
                                 null
                         }*/}
                     </View>
+                    <View>
+                        <Animated.View style={{
+                            backgroundColor: color,
+                            height: this.state.borderBottomWidth,
+                            // height: 1,
+                            width: '100%',
+                            transform: [
+                                {
+                                    translateX: translateX
+                                },
+                                {
+                                    scaleX: scaleX
+                                }
+                            ]
+                        }}>
+                        </Animated.View>
+                    </View>
+
+
                     { /*
                         //////textErrorHandlingModule
                     {
@@ -625,7 +674,7 @@ ContactInput
     .propTypes = {
     disableEmail: PropTypes.bool,
     disablePhoneNumber: PropTypes.bool,
-    disableAnimation:PropTypes.bool,
+    disableAnimation: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     style: PropTypes.object.isRequired,
     hideLabel: PropTypes.bool,
@@ -639,7 +688,7 @@ ContactInput
     .defaultProps = {
     disableEmail: false,
     disablePhoneNumber: false,
-    disableAnimation:false,
+    disableAnimation: false,
     labelTitle: '',
     defaultCountry: '',
     listItemStyle: {height: 60},
