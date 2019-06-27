@@ -24,7 +24,9 @@ class App extends Component
     }
     // => {dialCode: "+91"
            parsedNumber: "+913528712361"
-           phoneNumber: "3528712361"}
+           phoneNumber: "3528712361"
+           isValid:true
+           }
     
   render()
   {
