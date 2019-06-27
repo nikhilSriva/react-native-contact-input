@@ -12,8 +12,6 @@ import countryData from './Data/CountriesData';
 import * as _ from 'lodash';
 
 import CountryTile from "./CountryTile/CountryTile";
-
-
 const isIE = /*@cc_on!@*/false || !!document.documentMode;
 
 export class FlagSelect extends React.Component {
