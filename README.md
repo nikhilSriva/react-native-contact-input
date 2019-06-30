@@ -1,9 +1,11 @@
-#React-Native-Contact-Input
+# React-Native-Contact-Input
 Single switchable component for email and phone number (web & react-native support) :globe_with_meridians::iphone:
 
 ![license](https://img.shields.io/github/license/VISI-ONE/create-react-native-web-app.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/VISI-ONE/create-react-native-web-app.svg)
 ![npm](https://img.shields.io/npm/v/create-react-native-web-app.svg)
+
+![gif](https://i.imgur.com/6TgGYfH.gif)
 
 ## Installation and usage
 

@@ -131,7 +131,7 @@ export class ContactInput extends React.Component {
                     errorState: false
                 })
                 if (!this.props.disableAnimation) {
-                    this.initAnimation(0)
+                    this.initSwitchingAnimation(0)
                     setTimeout(() => {
                         this.setState({
                             isEmail: true,
@@ -151,7 +151,7 @@ export class ContactInput extends React.Component {
         } else if (e.target.value === '') {
             if (!this.props.disableAnimation) {
                 if (!this.props.disableEmail) {
-                    this.initAnimation(0)
+                    this.initSwitchingAnimation(0)
                     setTimeout(() => this.setState({
                         labelTitle: this.props.disablePhoneNumber === false && this.props.disableEmail === false ? 'Enter Email or Phone Number' : this.props.disableEmail ? 'Enter the Phone Number' : 'Enter the Email',
                         value: '',
@@ -237,7 +237,7 @@ export class ContactInput extends React.Component {
             })
 
     };
-    initAnimation = (toValue) => {
+    initSwitchingAnimation = (toValue) => {
         Animated.spring(this.animatedValue, {
             toValue: toValue,
             // velocity:5
@@ -423,12 +423,9 @@ export class ContactInput extends React.Component {
                 <View style={{width: '100%'}}>
                     {
                         !this.props.hideLabel ?
-                            <Animated.View style={{
-                                marginVertical: 2, transform: [
-                                    {
-                                        translateX: translateX,
-                                    }
-                                ]
+                            <View style={{
+                                marginVertical: 2,
+
                             }}>
                                 {
                                     this.state.isEmail ?
@@ -440,11 +437,15 @@ export class ContactInput extends React.Component {
                                             {this.state.labelTitle}
                                         </Text>
                                 }
-                            </Animated.View> :
+                            </View> :
                             null
                     }
 
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center'}}>
+                    <Animated.View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'center',transform: [
+                            {
+                                translateX: translateX,
+                            }
+                        ]}}>
                         {this.state.isEmail ?
                             null
                             :
@@ -458,7 +459,7 @@ export class ContactInput extends React.Component {
                                 }}>
                                     <FlagSelect
                                         animatedInstance={this.animatedValue}
-                                        initAnimation={this.initAnimation}
+                                        initAnimation={this.initSwitchingAnimation}
                                         countryMenuWidth={style.width}
                                         disableAnimation={this.props.disableAnimation}
                                         listItemStyle={this.props.listItemStyle}
@@ -477,7 +478,12 @@ export class ContactInput extends React.Component {
                             flex: 1,
                             borderColor: '#dcdcdc',
                             borderBottomWidth: this.state.defaultBottomWidth,
-                            height: 30
+                            height: 30,
+                            /*   transform: [
+                                   {
+                                       translateX: translateX,
+                                   }
+                               ]*/
                         }}>
                             <TextInput
                                 type={this.state.isEmail ? 'text' : 'number'}
@@ -608,9 +614,27 @@ export class ContactInput extends React.Component {
                                 :
                                 null
                         }*/}
-                    </View>
+                    </Animated.View>
                     <View>
-                        <Animated.View style={{
+                        <Animated.View style={this.state.borderBottomWidth===2?{
+                            backgroundColor: color,
+                            shadowColor:color,
+                            shadowBlur:3,
+                            shadowRadius: 6,
+                            shadowOpacity:0.3,
+                            shadowOffset: { width: 0, height: 2.2 },
+                            height: this.state.borderBottomWidth,
+                            // height: 1,
+                            width: '100%',
+                            transform: [
+                                {
+                                    translateX: translateX
+                                },
+                                {
+                                    scaleX: scaleX
+                                }
+                            ]
+                        }:{
                             backgroundColor: color,
                             height: this.state.borderBottomWidth,
                             // height: 1,
