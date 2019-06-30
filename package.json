@@ -1,6 +1,6 @@
 {
   "name": "react-native-contact-input",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Single switchable component for email and phone number (web & react-native support)",
   "author": "Nikhil Srivastava",
   "private": false,
