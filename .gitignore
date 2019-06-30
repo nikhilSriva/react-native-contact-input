@@ -12,7 +12,8 @@
 # production
 /build
 /dist
-/RnDs
+
+/rnDs
 
 # misc
 .DS_Store
