@@ -8,7 +8,7 @@ Single switchable component for email and phone number (web & react-native suppo
 ![gif](https://i.imgur.com/6TgGYfH.gif)
 
 ## DEMO
-Check out the live demo of the [React Native Contact Input][https://nikhilsriva.github.io/react-native-contact-input/] running on the
+Check out the live demo of [React Native Contact Input][https://nikhilsriva.github.io/react-native-contact-input/] running on the
 web.
 
 ## Installation and usage
